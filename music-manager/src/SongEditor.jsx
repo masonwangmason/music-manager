@@ -69,13 +69,13 @@ function SongEditor() {
                             type="submit"
                             className="bg-black text-red-600 py-2 px-4 rounded-md border-2 border-red-600 hover:bg-red-600 hover:text-slate-950"
                         >
-                            Delete Project
+                            Delete Song
                         </button>
                         <button 
                             type="submit"
                             className="bg-black text-slate-50 py-2 px-4 rounded-md border-2 border-slate-50 hover:bg-slate-50 hover:text-slate-950"
                         >
-                            Save Project
+                            Save Song
                         </button>
                     </div>
                 </div>
