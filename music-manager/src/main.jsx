@@ -6,6 +6,7 @@ import ProjectOverview from './ProjectOverview.jsx'
 import ProjectEditor from './ProjectEditor.jsx'
 import SongEditor from './SongEditor.jsx'
 import ProjectView from './ProjectView.jsx'
+import PlayerBar from './PlayerBar.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,5 +14,6 @@ createRoot(document.getElementById('root')).render(
     <ProjectEditor />
     <SongEditor />
     <ProjectView />
+    <PlayerBar />
   </StrictMode>,
 )
