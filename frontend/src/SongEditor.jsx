@@ -1,9 +1,20 @@
+import { useState } from 'react';
+import ProjectEditor from './ProjectEditor'; // Make sure this component exists
+
 function SongEditor() {
+    const [showProjectEditor, setShowProjectEditor] = useState(false);
+    
     return (
         <>  
             <section className="flex flex-col items-center my-5">
                 <div className="flex flex-row items-center justify-between w-full max-w-5xl mb-4">
                     <p className="project-overview-heading text-slate-50 font-semibold text-2xl">Song Editor</p>
+                    <button 
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center"
+                        onClick={() => setShowProjectEditor(true)}
+                    >
+                        Create New Project +
+                    </button>
                 </div>
 
                 {/* Form Container */}
@@ -80,6 +91,26 @@ function SongEditor() {
                     </div>
                 </div>
             </section>
+            
+            {/* Project Editor Popup */}
+            {showProjectEditor && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-black border border-slate-50 rounded-lg p-6 w-full max-w-3xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-semibold text-slate-50">Create New Project</h2>
+                            <button 
+                                onClick={() => setShowProjectEditor(false)}
+                                className="text-slate-50 hover:text-slate-300"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ProjectEditor onClose={() => setShowProjectEditor(false)} />
+                    </div>
+                </div>
+            )}
         </>
     );
 }

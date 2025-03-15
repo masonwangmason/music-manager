@@ -1,19 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './ProjectCard.jsx'
-import ProjectCard from './ProjectCard.jsx'
-import ProjectOverview from './ProjectOverview.jsx'
-import ProjectEditor from './ProjectEditor.jsx'
-import SongEditor from './SongEditor.jsx'
-import ProjectView from './ProjectView.jsx'
-import PlayerBar from './PlayerBar.jsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import PlayerBar from "./PlayerBar";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ProjectOverview />
-    <ProjectView />
-    <ProjectEditor />
-    <SongEditor />
-    <PlayerBar />
-  </StrictMode>,
-)
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <BrowserRouter> 
+        <div className="app-container">
+            {/* Main Content */}
+            <div className="main-content pb-20"> 
+                <App />
+            </div>
+
+            {/* Player Bar */}
+            <PlayerBar />
+        </div>
+    </BrowserRouter>
+);
+

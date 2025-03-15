@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
-function ProjectEditor({ onClose }) {
+function ProjectCreator({ onClose, onSave }) {
     // State for form inputs
     const [projectName, setProjectName] = useState('');
     const [projectType, setProjectType] = useState('');
+    const [projectDescription, setProjectDescription] = useState('');
     const [coverImage, setCoverImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Handle image upload
     const handleImageChange = (e) => {
@@ -18,24 +20,76 @@ function ProjectEditor({ onClose }) {
         }
     };
 
+    // Upload image to Cloudinary
+    const uploadToCloudinary = async (file) => {
+        const cloudName = 'df11www4b'; // Replace with your Cloudinary cloud name
+        const uploadPreset = 'music-manager'; // Replace with your upload preset
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+        
+        setIsUploading(true);
+        
+        try {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            setIsUploading(false);
+            
+            if (data.secure_url) {
+                return data.secure_url;
+            } else {
+                throw new Error('Failed to get image URL');
+            }
+        } catch (error) {
+            setIsUploading(false);
+            console.error('Error uploading to Cloudinary:', error);
+            alert('Failed to upload image. Please try again.');
+            return null;
+        }
+    };
+
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here you would typically save the project data
-        console.log('Project data:', { projectName, projectType, coverImage });
+        
+        let coverUrl = 'https://res.cloudinary.com/df11www4b/image/upload/v1741654092/music-manager/default-cover.jpg'; // Default cover
+        
+        if (coverImage) {
+            // Upload image to Cloudinary
+            const uploadedUrl = await uploadToCloudinary(coverImage);
+            if (uploadedUrl) {
+                coverUrl = uploadedUrl;
+            } else {
+                // If upload failed, you might want to handle this case
+                if (!confirm('Image upload failed. Continue without image?')) {
+                    return; // Stop form submission if user cancels
+                }
+            }
+        }
+        
+        // Create new project with Cloudinary URL
+        const newProject = {
+            project_name: projectName,
+            project_type: projectType,
+            project_description: projectDescription,
+            project_cover: coverUrl,
+            project_status: false // Assuming new projects start as not completed
+        };
+        
+        console.log('New project data:', newProject);
+        
+        // Call the onSave callback if provided
+        if (onSave) {
+            onSave(newProject);
+        }
         
         // Close the form after submission
         onClose();
-    };
-
-    // Handle project deletion
-    const handleDelete = (e) => {
-        e.preventDefault();
-        if (window.confirm('Are you sure you want to delete this project?')) {
-            // Delete logic would go here
-            console.log('Project deleted');
-            onClose();
-        }
     };
 
     return (
@@ -49,10 +103,13 @@ function ProjectEditor({ onClose }) {
                         accept="image/*"
                         className="border p-2 rounded w-full bg-black text-slate-50 border-slate-50 cursor-pointer"
                         onChange={handleImageChange}
+                        disabled={isUploading}
                     />
                     {/* Image Preview */}
                     <div className="border-2 border-slate-50 border-dotted mt-2 w-full h-32 flex items-center justify-center rounded">
-                        {imagePreview ? (
+                        {isUploading ? (
+                            <span className="font-medium text-slate-50">Uploading...</span>
+                        ) : imagePreview ? (
                             <img 
                                 src={imagePreview} 
                                 alt="Album cover preview" 
@@ -74,6 +131,19 @@ function ProjectEditor({ onClose }) {
                         value={projectName}
                         onChange={(e) => setProjectName(e.target.value)}
                         required
+                        disabled={isUploading}
+                    />
+                </div>
+
+                {/* Project Description Input */}
+                <div>
+                    <label className="block font-medium mb-1 text-left text-slate-50">Project Description</label>
+                    <textarea 
+                        className="border p-2 rounded w-full bg-black text-slate-50 border-slate-50 placeholder-gray-400 h-24"
+                        placeholder="Enter project description"
+                        value={projectDescription}
+                        onChange={(e) => setProjectDescription(e.target.value)}
+                        disabled={isUploading}
                     />
                 </div>
 
@@ -85,6 +155,7 @@ function ProjectEditor({ onClose }) {
                         value={projectType}
                         onChange={(e) => setProjectType(e.target.value)}
                         required
+                        disabled={isUploading}
                     >
                         <option value="">Select project type</option>
                         <option value="Album/EP">Album/EP</option>
@@ -98,21 +169,16 @@ function ProjectEditor({ onClose }) {
                         type="button"
                         className="bg-black text-slate-50 py-2 px-4 rounded-md border-2 border-slate-50 hover:bg-slate-50 hover:text-slate-950"
                         onClick={onClose}
+                        disabled={isUploading}
                     >
                         Cancel
                     </button>
                     <button 
-                        type="button"
-                        className="bg-black text-red-600 py-2 px-4 rounded-md border-2 border-red-600 hover:bg-red-600 hover:text-slate-950"
-                        onClick={handleDelete}
-                    >
-                        Delete Project
-                    </button>
-                    <button 
                         type="submit"
                         className="bg-black text-slate-50 py-2 px-4 rounded-md border-2 border-slate-50 hover:bg-slate-50 hover:text-slate-950"
+                        disabled={isUploading}
                     >
-                        Save Project
+                        {isUploading ? 'Creating...' : 'Create Project'}
                     </button>
                 </div>
             </form>
@@ -120,4 +186,4 @@ function ProjectEditor({ onClose }) {
     );
 }
 
-export default ProjectEditor;
+export default ProjectCreator;
