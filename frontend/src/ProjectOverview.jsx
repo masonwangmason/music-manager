@@ -47,16 +47,26 @@ function ProjectOverview() {
                 </div>
 
                 {/* Projects Grid */}
-                <div className="grid grid-cols-4 gap-3 max-w-5xl">
+                <div className="grid grid-cols-4 gap-5 max-w-5xl">
                     {projects.map((project, index) => (
                         <button
                             key={index}
-                            className="project-button hover:scale-105 transition duration-200"
+                            className="project-button hover:scale-105 transition duration-200 flex flex-col items-center" // Add flexbox classes
                             onClick={() => navigate(`/project/${index}`)}
                         >
-                            <img src={project.project_cover} alt={project.project_name} className="project-cover mb-3" />
-                            <h3 className="font-medium">{project.project_name}</h3>
-                            <p className="font-light">{project.project_type}</p>
+                            <img 
+                                src={project.project_cover} 
+                                alt={project.project_name} 
+                                className="mb-3 w-60 h-60 object-cover" // Tailwind classes for square dimensions
+                            />
+                            <h3 className="text-base text-center">{project.project_name}</h3> 
+                            <p className="font-light text-sm flex items-center justify-center"> 
+                                {project.project_type}
+                                <span 
+                                    className={`w-1.5 h-1.5 rounded-full ml-1.5 ${project.project_status ? 'bg-green-500' : 'bg-red-500'}`}
+                                    title={project.project_status ? "Complete" : "In progress"}
+                                ></span>
+                            </p>
                         </button>
                     ))}
                 </div>

@@ -34,7 +34,7 @@ function ProjectView() {
                     {/* Left-Aligned Content Box */}
                     <div className="flex flex-col items-start w-1/3">
                         <h2 className="font-medium mb-1 text-slate-50">Project Cover</h2>
-                        <img className="max-w-80 mb-4 mt-2" src={project.project_cover} alt="project-cover" />
+                        <img className="w-80 h-80 mb-4 mt-2" src={project.project_cover} alt="project-cover" />
 
                         <h2 className="font-medium mb-1 text-slate-50">Project Name</h2>
                         <p className="font-light mb-4 text-slate-50">{project.project_name}</p>
