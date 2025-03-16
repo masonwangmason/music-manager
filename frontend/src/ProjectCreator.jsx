@@ -83,9 +83,28 @@ function ProjectCreator({ onClose, onSave }) {
         
         console.log('New project data:', newProject);
         
-        // Call the onSave callback if provided
-        if (onSave) {
-            onSave(newProject);
+        // Send POST request to the server
+        try {
+            const response = await fetch(`/api/projects`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newProject),
+            });
+
+            if (response.ok) {
+                const savedProject = await response.json();
+                // Call the onSave callback if provided
+                if (onSave) {
+                    onSave(savedProject);
+                }
+                console.log('Project saved to server:', savedProject);
+            } else {
+                console.error('Failed to save project to server');
+            }
+        } catch (error) {
+            console.error('Error saving project:', error);
         }
         
         // Close the form after submission

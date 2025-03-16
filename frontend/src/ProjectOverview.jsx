@@ -1,26 +1,33 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import sampleProjects from "../../db/sampleProjects";
+import { useState, useEffect } from "react";
 import ProjectCreator from "./ProjectCreator";
 
 function ProjectOverview() {
     const navigate = useNavigate(); // Hook for navigation
     const [showProjectCreator, setShowProjectCreator] = useState(false);
-    const [projects, setProjects] = useState(sampleProjects);
+    const [projects, setProjects] = useState([]);
     
+    // Fetch projects from the server
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await fetch('/api/projects');
+                const data = await response.json();
+                setProjects(data);
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
     // Handle saving a new project
     const handleSaveProject = (newProject) => {
-        // Add the new project to the projects list
         const updatedProjects = [...projects, newProject];
         setProjects(updatedProjects);
-        
-        // In a real application, you would save this to your database
-        // For now, we're just updating the state
         console.log('New project saved:', newProject);
         console.log('Updated projects list:', updatedProjects);
-        
-        // You could also navigate to the new project
-        // navigate(`/project/${updatedProjects.length - 1}`);
     };
 
     return (

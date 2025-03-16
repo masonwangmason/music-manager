@@ -1,9 +1,23 @@
 import { useParams } from "react-router-dom";
-import sampleProjects from "../../db/sampleProjects";
+import { useState, useEffect } from "react";
 
 function ProjectView() {
     const { id } = useParams(); // Get the project ID from the URL
-    const project = sampleProjects[Number(id)]; // ✅ Convert ID to number to match array index
+    const [project, setProject] = useState(null);
+
+    useEffect(() => {
+        const fetchProject = async () => {
+            try {
+                const response = await fetch(`/api/projects`);
+                const data = await response.json();
+                setProject(data[Number(id)]);
+            } catch (error) {
+                console.error('Error fetching project:', error);
+            }
+        };
+
+        fetchProject();
+    }, [id]);
 
     if (!project) {
         return <p className="text-white text-center">⚠ Project not found!</p>;
