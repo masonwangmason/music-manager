@@ -8,15 +8,6 @@
     "id": 1,
     "project_songs": [
       {
-        "song_id": 1,
-        "project_id": 1,
-        "song_name": "Slide Thru",
-        "song_duration": "3:45",
-        "song_collaborators": "Lil Jamie",
-        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742247529/music-manager/w70yjtiuzukidc1hkegc.mp3",
-        "song_lyrics": ""
-      },
-      {
         "song_id": 2,
         "project_id": 1,
         "song_name": "hjg",
@@ -28,11 +19,11 @@
       {
         "song_id": 3,
         "project_id": 1,
-        "song_name": "asdfsgrfd",
+        "song_name": "fghjgfh",
         "song_duration": "2:47",
-        "song_collaborators": "gtrbyrfsvbt",
-        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742249705/a8gifwcdj38t7nvfkqwc.mp3",
-        "song_lyrics": "sadfsdafdgsdafsdaf"
+        "song_collaborators": "fdghgfh",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742253331/bfbqdcxfgljlnwk8aiey.mp3",
+        "song_lyrics": "fghfghgfhgh"
       }
     ]
   },

@@ -1,16 +1,19 @@
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useParams, useNavigate } from "react-router-dom"; 
 import { useState, useEffect } from "react";
 import ProjectEditor from "./ProjectEditor";
-import SongCard from "./SongCard"; // Import SongCard
-import SongCreator from "./SongCreator"; // Import SongCreator
+import SongCard from "./SongCard"; 
+import SongCreator from "./SongCreator"; 
+import SongEditor from "./SongEditor";
 
 function ProjectView() {
-  const { id } = useParams(); // Get the project ID from the URL
-  const navigate = useNavigate(); // Hook for navigation
+  const { id } = useParams(); 
+  const navigate = useNavigate(); 
   const [project, setProject] = useState(null);
   const [showProjectEditor, setShowProjectEditor] = useState(false);
-  const [showSongEditor, setShowSongEditor] = useState(false); // State for SongEditor popup
+  const [showSongCreator, setShowSongCreator] = useState(false); 
   const [projects, setProjects] = useState([]);
+  const [showSongEditor, setShowSongEditor] = useState(false); 
+  const [currentSong, setCurrentSong] = useState(null); // Add state for current song
 
   // Fetch project from the server
   useEffect(() => {
@@ -78,6 +81,42 @@ function ProjectView() {
     }));
   };
 
+  const handleUpdateSong = (updatedSong) => {
+    const updatedSongs = project.project_songs.map((song) =>
+      song.id === updatedSong.id ? updatedSong : song
+    );
+    setProject((prevProject) => ({
+      ...prevProject,
+      project_songs: updatedSongs,
+    }));
+  };
+
+  const openSongEditor = (song) => {
+    setCurrentSong(song); // Set the current song to be edited
+    setShowSongEditor(true); // Show the song editor
+  };
+
+  const handleDeleteSong = async (songId) => {
+    try {
+      const response = await fetch(`/api/projects/${project.id}/songs/${songId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        console.log('Song deleted:', songId);
+        setProject((prevProject) => ({
+          ...prevProject,
+          project_songs: prevProject.project_songs.filter(song => song.song_id !== songId),
+        }));
+        setShowSongEditor(false); // Close the editor after deletion
+      } else {
+        console.error('Failed to delete song');
+      }
+    } catch (error) {
+      console.error('Error deleting song:', error);
+    }
+  };
+
   return (
     <>
       <section className="flex flex-col items-start my-5 w-full max-w-5xl mx-auto">
@@ -136,13 +175,13 @@ function ProjectView() {
           <div className="flex flex-col items-start w-2/3">
             <button
               className="font-medium mb-1 text-slate-50 bg-slate-950 hover:bg-slate-50 hover:text-black py-1 px-2 border-2 border-slate-50 rounded-md transition duration-200 self-end"
-              onClick={() => setShowSongEditor(true)} // Show SongEditor popup
+              onClick={() => setShowSongCreator(true)} // Show SongEditor popup
             >
               Create New Song
             </button>
             {project.project_songs && project.project_songs.length > 0 ? (
               project.project_songs.map(song => (
-                <SongCard key={song.song_id} song={song} />
+                <SongCard key={song.song_id} song={song} onEdit={openSongEditor} onDelete={handleDeleteSong} /> // Pass onDelete function
               ))
             ) : (
               <p className="font-bold text-slate-50 text-left">No songs available in this project yet.
@@ -192,12 +231,49 @@ function ProjectView() {
       )}
 
       {/* Song Creator Popup */}
-      {showSongEditor && (
+      {showSongCreator && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-black border border-slate-50 rounded-lg p-6 w-full max-w-3xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-slate-50">
                 Create New Song
+              </h2>
+              <button
+                onClick={() => setShowSongCreator(false)}
+                className="text-slate-50 hover:text-slate-300"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <SongCreator
+              onClose={() => setShowSongCreator(false)}
+              projectId={id}
+              onSongAdded={handleSongAdded} // Pass the callback
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Song Editor Popup */}
+      {showSongEditor && currentSong && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-black border border-slate-50 rounded-lg p-6 w-full max-w-3xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-slate-50">
+                Edit Song
               </h2>
               <button
                 onClick={() => setShowSongEditor(false)}
@@ -219,14 +295,16 @@ function ProjectView() {
                 </svg>
               </button>
             </div>
-            <SongCreator
+            <SongEditor
+              song={currentSong} // Pass the current song data
               onClose={() => setShowSongEditor(false)}
-              projectId={id}
-              onSongAdded={handleSongAdded} // Pass the callback
+              onSave={handleUpdateSong}
+              onDelete={handleDeleteSong} // Pass the delete handler
             />
           </div>
         </div>
       )}
+
     </>
   );
 }

@@ -1,6 +1,6 @@
 import headphoneIcon from "./assets/headphone.png";
 
-function SongCard({ song }) {
+function SongCard({ song, onEdit }) { // Remove onDelete prop
   return (
     <div className="flex flex-row items-center w-full h-20 p-3 justify-between border-1 border-slate-50 rounded-2xl">
       <button>
@@ -14,7 +14,10 @@ function SongCard({ song }) {
       <p>{song.song_duration}</p> {/* Display song duration */}
       <p>{song.song_collaborators}</p> {/* Display song collaborators */}
       <div className="flex flex-row gap-1.5">
-        <button className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950">
+        <button
+          className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950"
+          onClick={() => onEdit(song)} // Call onEdit with the song data
+        >
           Edit
         </button>
         <button className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950">

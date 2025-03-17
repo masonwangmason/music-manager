@@ -103,8 +103,11 @@ router.post("/api/projects/:projectId/songs", (req, res) => {
     return res.status(404).json({ error: "Project not found" });
   }
 
+  // Generate a unique song_id by finding the maximum existing song_id and adding 1
+  const newSongId = project.project_songs.length > 0 ? Math.max(...project.project_songs.map(song => song.song_id)) + 1 : 1;
+
   const newSong = {
-    song_id: project.project_songs.length + 1,
+    song_id: newSongId,
     project_id: Number(projectId),
     song_name: songName,
     song_duration: songDuration,
@@ -117,6 +120,28 @@ router.post("/api/projects/:projectId/songs", (req, res) => {
   writeProjectsToFile(projects); // Save the updated projects array to the JSON file
 
   res.status(201).json(newSong);
+});
+
+// DELETE endpoint to remove a song from a project
+router.delete("/api/projects/:projectId/songs/:songId", (req, res) => {
+  const { projectId, songId } = req.params;
+  let projects = readProjectsFromFile(); // Read current projects
+  const project = projects.find(proj => proj.id === Number(projectId));
+
+  if (!project) {
+    return res.status(404).json({ error: "Project not found" });
+  }
+
+  const songIndex = project.project_songs.findIndex(song => song.song_id === Number(songId));
+  if (songIndex === -1) {
+    return res.status(404).json({ error: "Song not found" });
+  }
+
+  // Remove the song from the project's song list
+  project.project_songs.splice(songIndex, 1);
+  writeProjectsToFile(projects); // Save the updated projects array to the JSON file
+
+  res.status(204).send(); // Send a 204 No Content response
 });
 
 export default router;
