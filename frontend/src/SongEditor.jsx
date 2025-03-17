@@ -7,15 +7,6 @@ function SongEditor() {
     return (
         <>  
             <section className="flex flex-col items-center my-5">
-                <div className="flex flex-row items-center justify-between w-full max-w-5xl mb-4">
-                    <p className="project-overview-heading text-slate-50 font-semibold text-2xl">Song Editor</p>
-                    <button 
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center"
-                        onClick={() => setShowProjectEditor(true)}
-                    >
-                        Create New Project +
-                    </button>
-                </div>
 
                 {/* Form Container */}
                 <div className="w-full max-w-5xl bg-black p-6 rounded-lg">

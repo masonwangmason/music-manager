@@ -19,7 +19,11 @@ const readProjectsFromFile = () => {
 
 // Helper function to write projects to the JSON file
 const writeProjectsToFile = (projects) => {
-  fs.writeFileSync(projectsFilePath, JSON.stringify(projects, null, 2));
+  try {
+    fs.writeFileSync(projectsFilePath, JSON.stringify(projects, null, 2));
+  } catch (error) {
+    console.error('Error writing to projects.json:', error);
+  }
 };
 
 /* GET home page. */
@@ -42,6 +46,9 @@ router.post("/api/projects", (req, res) => {
   // Generate a new ID by finding the maximum existing ID and adding 1
   const newId = projects.length > 0 ? Math.max(...projects.map(proj => proj.id)) + 1 : 1;
   newProject.id = newId; // Assign the new ID to the project
+
+  // Ensure the new project includes an empty project_songs array
+  newProject.project_songs = newProject.project_songs || [];
 
   projects.push(newProject);
   writeProjectsToFile(projects); // Save to JSON file
@@ -82,6 +89,34 @@ router.delete("/api/projects/:id", (req, res) => {
   writeProjectsToFile(projects); // Save the updated list to the JSON file
 
   res.status(204).send(); // Send a 204 No Content response
+});
+
+// POST endpoint to add a new song to a project
+router.post("/api/projects/:projectId/songs", (req, res) => {
+  const { projectId } = req.params;
+  const { songName, songCollaborators, songInstrumental, songLyrics, songDuration } = req.body;
+
+  let projects = readProjectsFromFile(); // Read current projects
+  const project = projects.find(proj => proj.id === Number(projectId));
+
+  if (!project) {
+    return res.status(404).json({ error: "Project not found" });
+  }
+
+  const newSong = {
+    song_id: project.project_songs.length + 1,
+    project_id: Number(projectId),
+    song_name: songName,
+    song_duration: songDuration,
+    song_collaborators: songCollaborators,
+    song_instrumental: songInstrumental,
+    song_lyrics: songLyrics,
+  };
+
+  project.project_songs.push(newSong);
+  writeProjectsToFile(projects); // Save the updated projects array to the JSON file
+
+  res.status(201).json(newSong);
 });
 
 export default router;

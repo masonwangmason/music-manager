@@ -3,9 +3,38 @@
     "project_name": "Slide Thru",
     "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742020223/music-manager/zs0gtbiz76flhk9txnas.jpg",
     "project_type": "Album/EP",
-    "project_status": true,
-    "project_description": "A moody and immersive sonic journey through late-night thoughts and city lights, blending electronic beats with haunting vocals.",
-    "id": 1
+    "project_status": "In Progress",
+    "project_description": "A moody and immersive sonic journey through late-night thoughts and city lights, blending electronic beats with haunting vocals. HUIHUIHUIHIHUIHUIHIUHIU",
+    "id": 1,
+    "project_songs": [
+      {
+        "song_id": 1,
+        "project_id": 1,
+        "song_name": "Slide Thru",
+        "song_duration": "3:45",
+        "song_collaborators": "Lil Jamie",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742247529/music-manager/w70yjtiuzukidc1hkegc.mp3",
+        "song_lyrics": ""
+      },
+      {
+        "song_id": 2,
+        "project_id": 1,
+        "song_name": "hjg",
+        "song_duration": "3:20",
+        "song_collaborators": "fghjkhg",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742249553/rmq322kfygit1fnxztbb.mp3",
+        "song_lyrics": "fgvhbjnhgfdghj"
+      },
+      {
+        "song_id": 3,
+        "project_id": 1,
+        "song_name": "asdfsgrfd",
+        "song_duration": "2:47",
+        "song_collaborators": "gtrbyrfsvbt",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742249705/a8gifwcdj38t7nvfkqwc.mp3",
+        "song_lyrics": "sadfsdafdgsdafsdaf"
+      }
+    ]
   },
   {
     "project_name": "M.E",
@@ -70,5 +99,42 @@
     "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742239537/yq958c39rkzdzgxdgs1j.png",
     "project_status": "In Progress",
     "id": 9
+  },
+  {
+    "project_name": "dfg",
+    "project_type": "Album/EP",
+    "project_description": "ertgryhrgt",
+    "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742244639/kr6nul4b81czi4wtivq7.png",
+    "project_status": false,
+    "id": 10,
+    "project_songs": []
+  },
+  {
+    "project_name": "sdfgbrvfecdxsfg",
+    "project_type": "Single",
+    "project_description": "bhfdcfghngfdvg",
+    "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742245643/g69atfvynwlhmkp67qzj.png",
+    "project_status": false,
+    "id": 11,
+    "project_songs": []
+  },
+  {
+    "project_name": "fghjkhg",
+    "project_type": "Single",
+    "project_description": "hjkfghjkhgj",
+    "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742250409/fnp1cppormfsafkw337z.png",
+    "project_status": false,
+    "id": 12,
+    "project_songs": [
+      {
+        "song_id": 1,
+        "project_id": 12,
+        "song_name": "hjklkjhg",
+        "song_duration": "3:12",
+        "song_collaborators": "ghjkjhjgfhj",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742250433/pkzhswl0whnqescpklhz.mp3",
+        "song_lyrics": "ghjkhgfghjkhgfhj"
+      }
+    ]
   }
 ]

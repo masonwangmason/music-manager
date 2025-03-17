@@ -1,12 +1,15 @@
 import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 import { useState, useEffect } from "react";
 import ProjectEditor from "./ProjectEditor";
+import SongCard from "./SongCard"; // Import SongCard
+import SongCreator from "./SongCreator"; // Import SongCreator
 
 function ProjectView() {
   const { id } = useParams(); // Get the project ID from the URL
   const navigate = useNavigate(); // Hook for navigation
   const [project, setProject] = useState(null);
   const [showProjectEditor, setShowProjectEditor] = useState(false);
+  const [showSongEditor, setShowSongEditor] = useState(false); // State for SongEditor popup
   const [projects, setProjects] = useState([]);
 
   // Fetch project from the server
@@ -29,7 +32,6 @@ function ProjectView() {
 
     fetchProject();
   }, [id]);
-
 
   // Handle updating a project
   const handleUpdateProject = (updatedProject) => {
@@ -67,6 +69,14 @@ function ProjectView() {
   if (!project) {
     return <p className="text-white text-center">⚠ Project not found!</p>;
   }
+
+  // Function to handle adding a new song
+  const handleSongAdded = (newSong) => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      project_songs: [...prevProject.project_songs, newSong],
+    }));
+  };
 
   return (
     <>
@@ -121,6 +131,25 @@ function ProjectView() {
               Edit
             </button>
           </div>
+
+          {/* Right-Aligned Content Box for Songs */}
+          <div className="flex flex-col items-start w-2/3">
+            <button
+              className="font-medium mb-1 text-slate-50 bg-slate-950 hover:bg-slate-50 hover:text-black py-1 px-2 border-2 border-slate-50 rounded-md transition duration-200 self-end"
+              onClick={() => setShowSongEditor(true)} // Show SongEditor popup
+            >
+              Create New Song
+            </button>
+            {project.project_songs && project.project_songs.length > 0 ? (
+              project.project_songs.map(song => (
+                <SongCard key={song.song_id} song={song} />
+              ))
+            ) : (
+              <p className="font-bold text-slate-50 text-left">No songs available in this project yet.
+                <br/>Start by creating a new one by hitting the button above.
+                </p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -157,6 +186,43 @@ function ProjectView() {
               onClose={() => setShowProjectEditor(false)}
               onSave={handleUpdateProject}
               onDelete={handleDeleteProject} // Pass the delete handler
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Song Creator Popup */}
+      {showSongEditor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-black border border-slate-50 rounded-lg p-6 w-full max-w-3xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-slate-50">
+                Create New Song
+              </h2>
+              <button
+                onClick={() => setShowSongEditor(false)}
+                className="text-slate-50 hover:text-slate-300"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <SongCreator
+              onClose={() => setShowSongEditor(false)}
+              projectId={id}
+              onSongAdded={handleSongAdded} // Pass the callback
             />
           </div>
         </div>

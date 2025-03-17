@@ -5,7 +5,6 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
   const [projectType, setProjectType] = useState(project.project_type || "");
   const [projectDescription, setProjectDescription] = useState(project.project_description || "");
   const [projectStatus, setProjectStatus] = useState(project.project_status ? "Complete" : "In Progress");
-  const [coverImage, setCoverImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(project.project_cover || "");
 
   // Handle image upload
@@ -43,7 +42,7 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
       project_name: projectName,
       project_type: projectType,
       project_description: projectDescription,
-      project_status: projectStatus,
+      project_status: projectStatus === "Complete", // Convert string to boolean
       project_cover: imagePreview,
     };
   
