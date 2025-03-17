@@ -39,10 +39,11 @@ function ProjectOverview() {
                         Projects Overview
                     </p>
                     <button 
-                        className="bg-slate-950 text-white hover:bg-slate-50 hover:text-black font-medium py-1 px-2 rounded-md flex items-center transition duration-200"
+                        className="bg-slate-950 text-white border-1 hover:bg-slate-50 hover:text-black font-medium py-1 px-2 rounded-md flex items-center transition duration-300 group"
                         onClick={() => setShowProjectCreator(true)}
                     >
-                        Create New Project +
+                        <span className="group-hover:hidden">+</span>
+                        <span className="hidden group-hover:inline transition duration-400">Create New Project +</span>
                     </button>
                 </div>
 

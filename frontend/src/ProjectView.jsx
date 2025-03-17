@@ -164,20 +164,21 @@ function ProjectView() {
             </p>
 
             <button
-              className="bg-slate-950 text-white hover:bg-slate-50 hover:text-black font-medium py-1 px-2 border-2 border-slate-50 rounded-md transition duration-200"
+              className="bg-slate-950 text-white hover:bg-slate-50 hover:text-black font-normal py-1 px-2 border-1 border-slate-50 rounded-md transition duration-200"
               onClick={() => setShowProjectEditor(true)}
             >
-              Edit
+              Edit Project Details
             </button>
           </div>
 
           {/* Right-Aligned Content Box for Songs */}
           <div className="flex flex-col items-start w-2/3">
             <button
-              className="font-medium mb-1 text-slate-50 bg-slate-950 hover:bg-slate-50 hover:text-black py-1 px-2 border-2 border-slate-50 rounded-md transition duration-200 self-end"
+              className="bg-slate-950 text-white border-1 hover:bg-slate-50 hover:text-black font-medium py-1 px-2 rounded-md flex items-center transition duration-300 group mb-2 self-end"
               onClick={() => setShowSongCreator(true)} // Show SongEditor popup
             >
-              Create New Song
+              <span className="group-hover:hidden">+</span>
+              <span className="hidden group-hover:inline transition duration-400">Create New Song +</span>
             </button>
             {project.project_songs && project.project_songs.length > 0 ? (
               project.project_songs.map(song => (

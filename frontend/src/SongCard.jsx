@@ -2,7 +2,7 @@ import headphoneIcon from "./assets/headphone.png";
 
 function SongCard({ song, onEdit }) { // Remove onDelete prop
   return (
-    <div className="flex flex-row items-center w-full h-20 p-3 justify-between border-1 border-slate-50 rounded-2xl">
+    <div className="flex flex-row items-center w-full h-20 p-3 mb-1.5 justify-between border-1 border-slate-50 rounded-2xl">
       <button>
         <img
           className="bg-slate-50 p-1 size-8 rounded-2xl transition duration-400 hover:border-2"
