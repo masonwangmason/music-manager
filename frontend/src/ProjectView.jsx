@@ -83,7 +83,7 @@ function ProjectView() {
 
   const handleUpdateSong = (updatedSong) => {
     const updatedSongs = project.project_songs.map((song) =>
-      song.id === updatedSong.id ? updatedSong : song
+      song.song_id === updatedSong.song_id ? updatedSong : song
     );
     setProject((prevProject) => ({
       ...prevProject,

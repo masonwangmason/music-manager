@@ -26,7 +26,7 @@ function SongEditor({ song, onClose, onSave, onDelete }) {
       song_lyrics: songLyrics,
       song_duration: songDuration,
     };
-    onSave(updatedSong);
+    onSave(updatedSong); // Call onSave with the updated song data
     onClose();
   };
 
@@ -93,8 +93,9 @@ function SongEditor({ song, onClose, onSave, onDelete }) {
               Delete Song
             </button>
             <button 
-              type="submit"
+              type="button" // Change to type="button"
               className="bg-black text-slate-50 py-2 px-4 rounded-md border-2 border-slate-50 hover:bg-slate-50 hover:text-slate-950"
+              onClick={handleSave} // Add onClick to call handleSave
             >
               Save Song
             </button>
