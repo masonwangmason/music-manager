@@ -15,7 +15,13 @@ function ProjectView() {
       try {
         const response = await fetch(`/api/projects`);
         const data = await response.json();
-        setProject(data[Number(id)]);
+        console.log(data); // Log the data to verify the structure
+        const fetchedProject = data.find(proj => proj.id === Number(id)); // Use the id property
+        if (fetchedProject) {
+          setProject(fetchedProject);
+        } else {
+          console.error("Project not found");
+        }
       } catch (error) {
         console.error("Error fetching project:", error);
       }
@@ -24,13 +30,39 @@ function ProjectView() {
     fetchProject();
   }, [id]);
 
-  // Handle saving a new project
-  const handleUpdateProject = (newProject) => {
-    const updatedProjects = [...projects, newProject];
+
+  // Handle updating a project
+  const handleUpdateProject = (updatedProject) => {
+    const updatedProjects = projects.map((proj) =>
+      proj.id === updatedProject.id ? updatedProject : proj
+    );
     setProjects(updatedProjects);
-    console.log('New project saved:', newProject);
-    console.log('Updated projects list:', updatedProjects);
-};
+    setProject(updatedProject);
+    console.log('Project updated:', updatedProject);
+  };
+
+  // Handle deleting a project with confirmation
+  const handleDeleteProject = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this project?");
+    if (!confirmDelete) {
+      return; // Exit if the user cancels the deletion
+    }
+
+    try {
+      const response = await fetch(`/api/projects/${project.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        console.log('Project deleted:', project.id);
+        navigate(-1); // Navigate back to the project overview after deletion
+      } else {
+        console.error('Failed to delete project');
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
+  };
 
   if (!project) {
     return <p className="text-white text-center">⚠ Project not found!</p>;
@@ -84,7 +116,7 @@ function ProjectView() {
 
             <button
               className="bg-slate-950 text-white hover:bg-slate-50 hover:text-black font-medium py-1 px-2 border-2 border-slate-50 rounded-md transition duration-200"
-              onClick={() => setShowProjectEditor(true)} // Navigate back to the previous page
+              onClick={() => setShowProjectEditor(true)}
             >
               Edit
             </button>
@@ -92,7 +124,7 @@ function ProjectView() {
         </div>
       </section>
 
-      {/* Project Creator Popup */}
+      {/* Project Editor Popup */}
       {showProjectEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-black border border-slate-50 rounded-lg p-6 w-full max-w-3xl">
@@ -124,6 +156,7 @@ function ProjectView() {
               project={project} // Pass the current project data as a prop
               onClose={() => setShowProjectEditor(false)}
               onSave={handleUpdateProject}
+              onDelete={handleDeleteProject} // Pass the delete handler
             />
           </div>
         </div>

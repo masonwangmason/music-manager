@@ -52,7 +52,7 @@ function ProjectOverview() {
                         <button
                             key={index}
                             className="project-button hover:scale-105 transition duration-200 flex flex-col items-center" // Add flexbox classes
-                            onClick={() => navigate(`/project/${index}`)}
+                            onClick={() => navigate(`/project/${project.id}`)}
                         >
                             <img 
                                 src={project.project_cover} 

@@ -4,21 +4,40 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
   const [projectName, setProjectName] = useState(project.project_name || "");
   const [projectType, setProjectType] = useState(project.project_type || "");
   const [projectDescription, setProjectDescription] = useState(project.project_description || "");
-  const [projectStatus, setProjectStatus] = useState(project.project_status || "In Progress");
+  const [projectStatus, setProjectStatus] = useState(project.project_status ? "Complete" : "In Progress");
   const [coverImage, setCoverImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(project.project_cover || "");
 
   // Handle image upload
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
+    const cloudName = 'df11www4b';
+    const uploadPreset = 'music-manager';
+
     if (file) {
-      setCoverImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset); // Ensure this is correct
+
+      try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+
+        const data = await response.json();
+        setImagePreview(data.secure_url); // Update the image preview with the new URL
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updatedProject = {
       ...project,
       project_name: projectName,
@@ -27,7 +46,32 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
       project_status: projectStatus,
       project_cover: imagePreview,
     };
-    onSave(updatedProject);
+  
+    if (!project.id) {
+      console.error('Project ID is undefined');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`/api/projects/${project.id}`, {
+        method: 'PUT', // Use PUT or PATCH depending on your API design
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProject),
+      });
+  
+      if (response.ok) {
+        const savedProject = await response.json();
+        onSave(savedProject);
+        console.log('Project updated on server:', savedProject);
+      } else {
+        console.error('Failed to update project on server');
+      }
+    } catch (error) {
+      console.error('Error updating project:', error);
+    }
+  
     onClose();
   };
 

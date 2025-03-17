@@ -57,7 +57,7 @@ function ProjectCreator({ onClose, onSave }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        let coverUrl = 'https://res.cloudinary.com/df11www4b/image/upload/v1741654092/music-manager/default-cover.jpg'; // Default cover
+        let coverUrl = 'https://res.cloudinary.com/df11www4b/image/upload/v1742240942/music-manager/default-cover.png'; // Default cover
         
         if (coverImage) {
             // Upload image to Cloudinary
