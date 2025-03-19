@@ -122,6 +122,47 @@ router.post("/api/projects/:projectId/songs", (req, res) => {
   res.status(201).json(newSong);
 });
 
+// PUT endpoint to update a song in a project
+router.put("/api/projects/:projectId/songs/:songId", (req, res) => {
+  const { projectId, songId } = req.params;
+  const { songName, songCollaborators, songInstrumental, songLyrics, songDuration } = req.body;
+
+  console.log("Incoming song data:", { songName, songCollaborators, songInstrumental, songLyrics, songDuration });
+
+  let projects = readProjectsFromFile(); // Read current projects
+
+  const project = projects.find(proj => proj.id === Number(projectId));
+  if (!project) {
+    console.error(`Project with ID ${projectId} not found`);
+    return res.status(404).json({ error: "Project not found" });
+  }
+
+  const songIndex = project.project_songs.findIndex(song => song.song_id === Number(songId));
+  if (songIndex === -1) {
+    console.error(`Song with ID ${songId} not found in project ${projectId}`);
+    return res.status(404).json({ error: "Song not found" });
+  }
+
+  // Update the song with the new data, preserving existing values if undefined
+  project.project_songs[songIndex] = {
+    ...project.project_songs[songIndex],
+    song_name: songName !== undefined ? songName : project.project_songs[songIndex].song_name,
+    song_collaborators: songCollaborators !== undefined ? songCollaborators : project.project_songs[songIndex].song_collaborators,
+    song_instrumental: songInstrumental !== undefined ? songInstrumental : project.project_songs[songIndex].song_instrumental,
+    song_lyrics: songLyrics !== undefined ? songLyrics : project.project_songs[songIndex].song_lyrics,
+    song_duration: songDuration !== undefined ? songDuration : project.project_songs[songIndex].song_duration,
+  };
+
+  try {
+    writeProjectsToFile(projects); // Save the updated projects array to the JSON file
+    console.log("Updated song:", project.project_songs[songIndex]);
+    res.status(200).json(project.project_songs[songIndex]);
+  } catch (error) {
+    console.error('Error writing to projects.json:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // DELETE endpoint to remove a song from a project
 router.delete("/api/projects/:projectId/songs/:songId", (req, res) => {
   const { projectId, songId } = req.params;

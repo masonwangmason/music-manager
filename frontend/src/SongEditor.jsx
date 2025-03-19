@@ -1,33 +1,76 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 function SongEditor({ song, onClose, onSave, onDelete }) {
-  const [songName, setSongName] = useState("");
-  const [songCollaborators, setSongCollaborators] = useState("");
-  const [songInstrumental, setSongInstrumental] = useState("");
-  const [songLyrics, setSongLyrics] = useState("");
-  const [songDuration, setSongDuration] = useState("");
+  const [songName, setSongName] = useState(song.song_name || "");
+  const [songCollaborators, setSongCollaborators] = useState(song.song_collaborators || "");
+  const [songInstrumental, setSongInstrumental] = useState(song.song_instrumental || "");
+  const [songLyrics, setSongLyrics] = useState(song.song_lyrics || "");
+  const [songDuration, setSongDuration] = useState(song.song_duration || "");
 
-  useEffect(() => {
-    if (song) {
-      setSongName(song.song_name || "");
-      setSongCollaborators(song.song_collaborators || "");
-      setSongInstrumental(song.song_instrumental || "");
-      setSongLyrics(song.song_lyrics || "");
-      setSongDuration(song.song_duration || "");
+  // Function to handle file upload
+  const handleFileUpload = async (file) => {
+    const cloudName = 'df11www4b'; // Your Cloudinary cloud name
+    const uploadPreset = 'music-manager'; // Your upload preset
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+
+    try {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload instrumental');
+      }
+
+      const data = await response.json();
+      setSongInstrumental(data.secure_url); // Update the state with the new URL
+
+      // Convert duration from seconds to "minutes:seconds" format
+      const minutes = Math.floor(data.duration / 60);
+      const seconds = Math.floor(data.duration % 60).toString().padStart(2, '0');
+      const formattedDuration = `${minutes}:${seconds}`;
+      setSongDuration(formattedDuration); // Set the formatted duration
+      console.log('Song duration:', formattedDuration);
+    } catch (error) {
+      console.error('Error uploading instrumental:', error);
     }
-  }, [song]);
+  };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updatedSong = {
-      ...song,
-      song_name: songName,
-      song_collaborators: songCollaborators,
-      song_instrumental: songInstrumental,
-      song_lyrics: songLyrics,
-      song_duration: songDuration,
+      songName: songName,
+      songCollaborators: songCollaborators,
+      songInstrumental: songInstrumental || song.song_instrumental, // Preserve existing instrumental if not updated
+      songLyrics: songLyrics,
+      songDuration: songDuration,
     };
-    onSave(updatedSong); // Call onSave with the updated song data
-    onClose();
+
+    // Debug log to verify the updated song data
+    console.log("Updated song data:", updatedSong);
+
+    try {
+      const response = await fetch(`/api/projects/${song.project_id}/songs/${song.song_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedSong),
+      });
+
+      if (response.ok) {
+        const savedSong = await response.json();
+        onSave(savedSong); // Update the UI with the saved song
+        onClose();
+      } else {
+        console.error('Failed to update song');
+      }
+    } catch (error) {
+      console.error('Error updating song:', error);
+    }
   };
 
   return (
@@ -63,6 +106,12 @@ function SongEditor({ song, onClose, onSave, onDelete }) {
                   type="file" 
                   accept="audio/*"
                   className="border p-2 rounded w-full bg-black text-slate-50 border-slate-50 cursor-pointer"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      handleFileUpload(file); // Call the upload function
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -93,9 +142,9 @@ function SongEditor({ song, onClose, onSave, onDelete }) {
               Delete Song
             </button>
             <button 
-              type="button" // Change to type="button"
+              type="button"
               className="bg-black text-slate-50 py-2 px-4 rounded-md border-2 border-slate-50 hover:bg-slate-50 hover:text-slate-950"
-              onClick={handleSave} // Add onClick to call handleSave
+              onClick={handleSave}
             >
               Save Song
             </button>
