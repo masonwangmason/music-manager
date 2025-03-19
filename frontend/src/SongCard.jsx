@@ -1,9 +1,9 @@
 import headphoneIcon from "./assets/headphone.png";
 
-function SongCard({ song, onEdit }) {
+function SongCard({ song, onEdit, onPlay }) { // Add onPlay prop
   return (
     <div className="flex flex-row items-center w-full p-3 mb-1.5 justify-between border-1 border-slate-50 rounded-2xl bg-black text-slate-50">
-      <button className="mr-3">
+      <button className="mr-3" onClick={() => onPlay(song.song_instrumental)}> {/* Call onPlay with song URL */}
         <img
           className="bg-slate-50 p-1 size-8 rounded-2xl transition duration-400 hover:border-2"
           src={headphoneIcon}

@@ -6,9 +6,27 @@ import nextButton from "./assets/buttons/next.png";
 import repeatButton from "./assets/buttons/repeat.png";
 import maxSoundIcon from "./assets/buttons/speaker.png";
 import minSoundIcon from "./assets/buttons/mute.png";
+import { useState, useRef, useEffect } from "react";
 
+function PlayerBar({ songUrl }) { // Accept songUrl as a prop
+  const [playerState, setPlayerState] = useState(false); // false for paused, true for playing
+  const audioRef = useRef(null); // Reference to the audio element
 
-function PlayerBar() {
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load(); // Load the new song URL
+    }
+  }, [songUrl]);
+
+  const togglePlayPause = () => {
+    if (playerState) {
+      audioRef.current.pause(); // Pause the audio
+    } else {
+      audioRef.current.play(); // Play the audio
+    }
+    setPlayerState(!playerState); // Toggle between play and pause
+  };
+
   return (
     <>
       {/* Player Bar - Fixed at Bottom */}
@@ -36,20 +54,12 @@ function PlayerBar() {
               alt="previous-button"
             />
           </button>
-          {/* Play */}
-          <button>
+          {/* Play/Pause Toggle */}
+          <button onClick={togglePlayPause}>
             <img
               className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
-              src={playButton}
-              alt="play-button"
-            />
-          </button>
-          {/* Pause */}
-          <button>
-            <img
-              className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
-              src={pauseButton}
-              alt="pause-button"
+              src={playerState ? pauseButton : playButton} // Toggle image based on state
+              alt={playerState ? "pause-button" : "play-button"}
             />
           </button>
           {/* Next */}
@@ -84,6 +94,9 @@ function PlayerBar() {
           <input
             type="range"
             className="w-24 h-1 bg-gray-600 rounded-full cursor-pointer"
+            onChange={(e) => {
+              audioRef.current.volume = e.target.value / 100; // Adjust volume
+            }}
           />{" "}
 
           {/* Max Volume Icon */}
@@ -94,6 +107,9 @@ function PlayerBar() {
           />
         </div>
       </div>
+
+      {/* Audio Element */}
+      <audio ref={audioRef} src={songUrl} preload="auto" />
     </>
   );
 }

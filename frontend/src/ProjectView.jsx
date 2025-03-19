@@ -5,7 +5,7 @@ import SongCard from "./SongCard";
 import SongCreator from "./SongCreator"; 
 import SongEditor from "./SongEditor";
 
-function ProjectView() {
+function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
   const { id } = useParams(); 
   const navigate = useNavigate(); 
   const [project, setProject] = useState(null);
@@ -182,7 +182,7 @@ function ProjectView() {
             </button>
             {project.project_songs && project.project_songs.length > 0 ? (
               project.project_songs.map(song => (
-                <SongCard key={song.song_id} song={song} onEdit={openSongEditor} onDelete={handleDeleteSong} /> // Pass onDelete function
+                <SongCard key={song.song_id} song={song} onEdit={openSongEditor} onPlay={onPlaySong} /> // Pass onPlay prop
               ))
             ) : (
               <p className="font-bold text-slate-50 text-left">No songs available in this project yet.
