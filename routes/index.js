@@ -26,15 +26,9 @@ const writeProjectsToFile = (projects) => {
   }
 };
 
-/* GET home page. */
-router.get("/", (req, res) => {
-  res.send("Welcome to your Express app!");
-});
-
 /* GET API data. */
 router.get("/api/projects", (req, res) => {
   const projects = readProjectsFromFile(); // Read from file on each request
-  console.log("Projects:", projects); // Log to verify data
   res.json(projects);
 });
 

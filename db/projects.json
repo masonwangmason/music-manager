@@ -28,11 +28,11 @@
       {
         "song_id": 4,
         "project_id": 1,
-        "song_name": "",
-        "song_collaborators": "",
-        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742424315/qeam5ckf61usazxxhkiw.mp4",
+        "song_name": "Supercars",
+        "song_collaborators": "$valte",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742428271/u281o9bsbcdvqvggkqn7.mp4",
         "song_lyrics": "",
-        "song_duration": ""
+        "song_duration": "3:22"
       },
       {
         "song_id": 5,
@@ -69,7 +69,18 @@
     "project_type": "Single",
     "project_status": false,
     "project_description": "A synth-heavy, dreamlike track that captures the feeling of chasing an unforgettable moment through neon-lit streets.",
-    "id": 2
+    "id": 2,
+    "project_songs": [
+      {
+        "song_id": 1,
+        "project_id": 2,
+        "song_name": "Poor Dad Rich Me",
+        "song_duration": "2:12",
+        "song_collaborators": "",
+        "song_instrumental": "https://res.cloudinary.com/df11www4b/video/upload/v1742429012/lurw1cu2xw8du7n23klh.mp3",
+        "song_lyrics": ""
+      }
+    ]
   },
   {
     "project_name": "Chrome Heart Freestyle",
@@ -126,23 +137,5 @@
     "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742239537/yq958c39rkzdzgxdgs1j.png",
     "project_status": "In Progress",
     "id": 9
-  },
-  {
-    "project_name": "hgfdhjhkijiuytdryfui",
-    "project_type": "Album/EP",
-    "project_description": "ertgryhrgt",
-    "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742244639/kr6nul4b81czi4wtivq7.png",
-    "project_status": false,
-    "id": 10,
-    "project_songs": []
-  },
-  {
-    "project_name": "sdfgbrvfecdxsfg",
-    "project_type": "Single",
-    "project_description": "bhfdcfghngfdvg",
-    "project_cover": "https://res.cloudinary.com/df11www4b/image/upload/v1742245643/g69atfvynwlhmkp67qzj.png",
-    "project_status": false,
-    "id": 11,
-    "project_songs": []
   }
 ]

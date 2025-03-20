@@ -5,18 +5,33 @@ import App from "./App";
 import PlayerBar from "./PlayerBar";
 
 function Main() {
-  const [currentSongUrl, setCurrentSongUrl] = useState(""); // State to hold the current song URL
+  const [currentSongUrl, setCurrentSongUrl] = useState("");
+  const [currentSongName, setCurrentSongName] = useState("");
+  const [currentCollaboratorName, setCurrentCollaboratorName] = useState("");
+  const [currentProjectCover, setCurrentProjectCover] = useState("");
+
+  const handlePlaySong = (songUrl, songName, collaboratorName, projectCover) => {
+    setCurrentSongUrl(songUrl);
+    setCurrentSongName(songName);
+    setCurrentCollaboratorName(collaboratorName);
+    setCurrentProjectCover(projectCover);
+  };
 
   return (
     <BrowserRouter> 
       <div className="app-container">
         {/* Main Content */}
         <div className="main-content pb-20"> 
-          <App onPlaySong={setCurrentSongUrl} /> {/* Pass setCurrentSongUrl to App */}
+          <App onPlaySong={handlePlaySong} /> {/* Pass handlePlaySong to App */}
         </div>
 
         {/* Player Bar */}
-        <PlayerBar songUrl={currentSongUrl} /> {/* Pass currentSongUrl to PlayerBar */}
+        <PlayerBar 
+          songUrl={currentSongUrl} 
+          songName={currentSongName} 
+          collaboratorName={currentCollaboratorName} 
+          projectCover={currentProjectCover} 
+        />
       </div>
     </BrowserRouter>
   );

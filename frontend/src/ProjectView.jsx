@@ -5,7 +5,7 @@ import SongCard from "./SongCard";
 import SongCreator from "./SongCreator"; 
 import SongEditor from "./SongEditor";
 
-function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
+function ProjectView({ onPlaySong }) {
   const { id } = useParams(); 
   const navigate = useNavigate(); 
   const [project, setProject] = useState(null);
@@ -13,16 +13,14 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
   const [showSongCreator, setShowSongCreator] = useState(false); 
   const [projects, setProjects] = useState([]);
   const [showSongEditor, setShowSongEditor] = useState(false); 
-  const [currentSong, setCurrentSong] = useState(null); // Add state for current song
+  const [currentSong, setCurrentSong] = useState(null);
 
-  // Fetch project from the server
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const response = await fetch(`/api/projects`);
         const data = await response.json();
-        console.log(data); // Log the data to verify the structure
-        const fetchedProject = data.find(proj => proj.id === Number(id)); // Use the id property
+        const fetchedProject = data.find(proj => proj.id === Number(id));
         if (fetchedProject) {
           setProject(fetchedProject);
         } else {
@@ -36,21 +34,18 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
     fetchProject();
   }, [id]);
 
-  // Handle updating a project
   const handleUpdateProject = (updatedProject) => {
     const updatedProjects = projects.map((proj) =>
       proj.id === updatedProject.id ? updatedProject : proj
     );
     setProjects(updatedProjects);
     setProject(updatedProject);
-    console.log('Project updated:', updatedProject);
   };
 
-  // Handle deleting a project with confirmation
   const handleDeleteProject = async () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this project?");
     if (!confirmDelete) {
-      return; // Exit if the user cancels the deletion
+      return;
     }
 
     try {
@@ -59,8 +54,7 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
       });
 
       if (response.ok) {
-        console.log('Project deleted:', project.id);
-        navigate(-1); // Navigate back to the project overview after deletion
+        navigate(-1);
       } else {
         console.error('Failed to delete project');
       }
@@ -73,7 +67,6 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
     return <p className="text-white text-center">⚠ Project not found!</p>;
   }
 
-  // Function to handle adding a new song
   const handleSongAdded = (newSong) => {
     setProject((prevProject) => ({
       ...prevProject,
@@ -92,8 +85,8 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
   };
 
   const openSongEditor = (song) => {
-    setCurrentSong(song); // Set the current song to be edited
-    setShowSongEditor(true); // Show the song editor
+    setCurrentSong(song);
+    setShowSongEditor(true);
   };
 
   const handleDeleteSong = async (songId) => {
@@ -103,12 +96,11 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
       });
 
       if (response.ok) {
-        console.log('Song deleted:', songId);
         setProject((prevProject) => ({
           ...prevProject,
           project_songs: prevProject.project_songs.filter(song => song.song_id !== songId),
         }));
-        setShowSongEditor(false); // Close the editor after deletion
+        setShowSongEditor(false);
       } else {
         console.error('Failed to delete song');
       }
@@ -123,7 +115,7 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
         {/* Back Button */}
         <button
           className="bg-slate-950 text-white hover:bg-slate-50 hover:text-black font-medium py-1 mb-2 rounded-md transition duration-200"
-          onClick={() => navigate(-1)} // Navigate back to the previous page
+          onClick={() => navigate(-1)}
         >
           Back to Projects Overview
         </button>
@@ -175,14 +167,19 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
           <div className="flex flex-col items-start w-2/3">
             <button
               className="bg-slate-950 text-white border-1 hover:bg-slate-50 hover:text-black font-medium py-1 px-2 rounded-md flex items-center transition duration-300 group mb-2 self-end"
-              onClick={() => setShowSongCreator(true)} // Show SongEditor popup
+              onClick={() => setShowSongCreator(true)}
             >
               <span className="group-hover:hidden">+</span>
               <span className="hidden group-hover:inline transition duration-400">Create New Song +</span>
             </button>
             {project.project_songs && project.project_songs.length > 0 ? (
               project.project_songs.map(song => (
-                <SongCard key={song.song_id} song={song} onEdit={openSongEditor} onPlay={onPlaySong} /> // Pass onPlay prop
+                <SongCard 
+                  key={song.song_id} 
+                  song={song} 
+                  onEdit={openSongEditor} 
+                  onPlay={() => onPlaySong(song.song_instrumental, song.song_name, song.song_collaborators, project.project_cover)} 
+                />
               ))
             ) : (
               <p className="font-bold text-slate-50 text-left">No songs available in this project yet.
@@ -222,10 +219,10 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
               </button>
             </div>
             <ProjectEditor
-              project={project} // Pass the current project data as a prop
+              project={project}
               onClose={() => setShowProjectEditor(false)}
               onSave={handleUpdateProject}
-              onDelete={handleDeleteProject} // Pass the delete handler
+              onDelete={handleDeleteProject}
             />
           </div>
         </div>
@@ -262,7 +259,7 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
             <SongCreator
               onClose={() => setShowSongCreator(false)}
               projectId={id}
-              onSongAdded={handleSongAdded} // Pass the callback
+              onSongAdded={handleSongAdded}
             />
           </div>
         </div>
@@ -297,10 +294,10 @@ function ProjectView({ onPlaySong }) { // Accept onPlaySong as a prop
               </button>
             </div>
             <SongEditor
-              song={currentSong} // Pass the current song data
+              song={currentSong}
               onClose={() => setShowSongEditor(false)}
               onSave={handleUpdateSong}
-              onDelete={handleDeleteSong} // Pass the delete handler
+              onDelete={handleDeleteSong}
             />
           </div>
         </div>

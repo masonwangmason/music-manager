@@ -2,11 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import ProjectOverview from "./ProjectOverview";
 import ProjectView from "./ProjectView";
 
-function App({ onPlaySong }) { // Accept onPlaySong as a prop
+function App({ onPlaySong }) {
   return (
     <Routes>
       <Route path="/" element={<ProjectOverview />} />
-      <Route path="/project/:id" element={<ProjectView onPlaySong={onPlaySong} />} /> {/* Pass onPlaySong to ProjectView */}
+      <Route path="/project/:id" element={<ProjectView onPlaySong={onPlaySong} />} />
     </Routes>
   );
 }

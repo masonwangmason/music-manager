@@ -1,4 +1,3 @@
-import albumCover from "./assets/cover1.png";
 import playButton from "./assets/buttons/play.png";
 import pauseButton from "./assets/buttons/pause.png";
 import previousButton from "./assets/buttons/previous.png";
@@ -8,76 +7,132 @@ import maxSoundIcon from "./assets/buttons/speaker.png";
 import minSoundIcon from "./assets/buttons/mute.png";
 import { useState, useRef, useEffect } from "react";
 
-function PlayerBar({ songUrl }) { // Accept songUrl as a prop
-  const [playerState, setPlayerState] = useState(false); // false for paused, true for playing
-  const audioRef = useRef(null); // Reference to the audio element
+function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
+  const [playerState, setPlayerState] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef(null);
+  const [loopStatus, setLoopStatus] = useState(false); 
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.load(); // Load the new song URL
+    if (audioRef.current && songUrl) {
+      audioRef.current.load();
+      audioRef.current.play();
+      setPlayerState(true);
     }
   }, [songUrl]);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      const updateTime = () => setCurrentTime(audio.currentTime);
+      audio.addEventListener("timeupdate", updateTime);
+      audio.addEventListener("loadedmetadata", () => setDuration(audio.duration));
+
+      return () => {
+        audio.removeEventListener("timeupdate", updateTime);
+      };
+    }
+  }, []);
+
   const togglePlayPause = () => {
     if (playerState) {
-      audioRef.current.pause(); // Pause the audio
+      audioRef.current.pause();
     } else {
-      audioRef.current.play(); // Play the audio
+      audioRef.current.play();
     }
-    setPlayerState(!playerState); // Toggle between play and pause
+    setPlayerState(!playerState);
+  };
+
+  const handleLoopChange = () => {
+    if (audioRef.current) {
+      audioRef.current.loop = !loopStatus; // Toggle loop property
+      setLoopStatus(!loopStatus);
+      console.log(`Loop status: ${audioRef.current.loop}`); // Log to confirm loop status
+    }
+  };
+
+  const handleSliderChange = (e) => {
+    const newTime = e.target.value;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   return (
     <>
       {/* Player Bar - Fixed at Bottom */}
-      <div className="fixed bottom-0 left-0 w-full bg-slate-950 text-white flex items-center justify-between p-4">
+      <div className="fixed bottom-0 left-0 w-full bg-slate-950 text-white flex flex-row items-center justify-between p-4">
         {/* Song Info */}
         <div className="flex items-center gap-3">
-          <img
-            src={albumCover}
-            alt="Album Cover"
-            className="w-12 h-12 rounded-md"
-          />
+          {projectCover && (
+            <img
+              src={projectCover} 
+              alt="Project Cover"
+              className="w-18 h-18 ml-4 rounded-md"
+            />
+          )}
           <div>
-            <h4 className="text-sm font-semibold">Song Title</h4>
-            <p className="text-xs text-gray-400">Artist Name</p>
+            <h4 className="font-semibold text-left">{songName}</h4>
+            <p className="text-sm text-gray-400 text-left">feat.{collaboratorName}</p>
           </div>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-3 text-xl">
-          {/* Previous */}
-          <button>
-            <img
-              className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
-              src={previousButton}
-              alt="previous-button"
+        <div className="w-2xl flex flex-col items-center justify-center">
+          <div className="flex items-center gap-3 text-xl">
+            {/* Previous */}
+            <button>
+              <img
+                className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
+                src={previousButton}
+                alt="previous-button"
+              />
+            </button>
+            {/* Play/Pause Toggle */}
+            <button onClick={togglePlayPause}>
+              <img
+                className="w-12 h-12 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
+                src={playerState ? pauseButton : playButton}
+                alt={playerState ? "pause-button" : "play-button"}
+              />
+            </button>
+            {/* Next */}
+            <button>
+              <img
+                className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
+                src={nextButton}
+                alt="next-button"
+              />
+            </button>
+          </div>
+        
+          {/* Progress Slider */}
+          <div className="flex items-center justify-center gap-2 w-full">
+            <span className="text-sm">{formatTime(currentTime)}</span> {/* Time passed */}
+            <input
+              type="range"
+              min="0"
+              max={duration}
+              value={currentTime}
+              onChange={handleSliderChange}
+              className="accent-red-500 w-96 mt-3 mb-2"
             />
-          </button>
-          {/* Play/Pause Toggle */}
-          <button onClick={togglePlayPause}>
-            <img
-              className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
-              src={playerState ? pauseButton : playButton} // Toggle image based on state
-              alt={playerState ? "pause-button" : "play-button"}
-            />
-          </button>
-          {/* Next */}
-          <button>
-            <img
-              className="w-10 h-10 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
-              src={nextButton}
-              alt="next-button"
-            />
-          </button>
+            <span className="text-sm">{formatTime(duration)}</span> {/* Total duration */}
+          </div>
         </div>
 
         {/* Volume & Extra Controls */}
         <div className="flex items-center gap-4">
           {/* Repeat */}
-          <button>
+          <button onClick={handleLoopChange}>
             <img
-              className="w-10 h-10 p-2 bg-white rounded-4xl border-2 border-slate-50 transition duration-200 hover:border-slate-500"
+              className={`w-8 h-8 p-2 ${loopStatus ? 'bg-red-500'  : 'bg-slate-50'} rounded-4xl transition duration-200`}
               src={repeatButton}
               alt="repeat-button"
             />
@@ -93,9 +148,12 @@ function PlayerBar({ songUrl }) { // Accept songUrl as a prop
           {/* Volume Slider */}
           <input
             type="range"
-            className="w-24 h-1 bg-gray-600 rounded-full cursor-pointer"
+            min="0"
+            max="1"
+            step="0.01"
+            className="w-24 h-1 accent-red-500 bg-gray-600 rounded-full cursor-pointer"
             onChange={(e) => {
-              audioRef.current.volume = e.target.value / 100; // Adjust volume
+              audioRef.current.volume = e.target.value;
             }}
           />{" "}
 
@@ -108,8 +166,8 @@ function PlayerBar({ songUrl }) { // Accept songUrl as a prop
         </div>
       </div>
 
-      {/* Audio Element */}
-      <audio ref={audioRef} src={songUrl} preload="auto" />
+      {/* Conditionally render the audio element only if songUrl is provided */}
+      {songUrl && <audio ref={audioRef} src={songUrl} preload="auto" />}
     </>
   );
 }
