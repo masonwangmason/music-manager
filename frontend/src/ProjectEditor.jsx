@@ -6,44 +6,62 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
   const [projectDescription, setProjectDescription] = useState(project.project_description || "");
   const [projectStatus, setProjectStatus] = useState(project.project_status ? "Complete" : "In Progress");
   const [imagePreview, setImagePreview] = useState(project.project_cover || "");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   // Handle image upload
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     const cloudName = 'df11www4b';
     const uploadPreset = 'music-manager';
-
+  
     if (file) {
+      // Set uploading state to true
+      setIsUploading(true);
+      setUploadError("");
+      console.log('Uploading image to Cloudinary...');
+      
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', uploadPreset); // Ensure this is correct
-
+      formData.append('upload_preset', uploadPreset);
+  
       try {
         const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
           method: 'POST',
           body: formData,
         });
-
+  
         if (!response.ok) {
           throw new Error('Failed to upload image');
         }
-
+  
         const data = await response.json();
+        console.log('Image uploaded successfully:', data);
         setImagePreview(data.secure_url); // Update the image preview with the new URL
+        setIsUploading(false); // Set uploading state to false
       } catch (error) {
         console.error('Error uploading image:', error);
+        setUploadError("Failed to upload image. Please try again.");
+        setIsUploading(false); // Set uploading state to false even if there's an error
       }
     }
   };
 
   const handleSave = async () => {
+    // Check if an image is currently being uploaded
+    if (isUploading) {
+      alert("Please wait for the image to finish uploading before saving.");
+      return;
+    }
+    
+    // Make sure we're using the latest imagePreview value
     const updatedProject = {
       ...project,
       project_name: projectName,
       project_type: projectType,
       project_description: projectDescription,
       project_status: projectStatus === "Complete", // Convert string to boolean
-      project_cover: imagePreview,
+      project_cover: imagePreview, // This should contain the Cloudinary URL
     };
   
     if (!project.id) {
@@ -51,27 +69,42 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
       return;
     }
   
+    console.log('Sending update request for project:', updatedProject);
+    console.log('Image URL being sent:', imagePreview);
+  
     try {
       const response = await fetch(`/api/projects/${project.id}`, {
-        method: 'PUT', // Use PUT or PATCH depending on your API design
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedProject),
       });
   
+      console.log('Received response:', response);
+  
       if (response.ok) {
         const savedProject = await response.json();
-        onSave(savedProject);
+        // Make sure we're passing the complete updated project back to the parent
+        onSave(savedProject); // Update client-side state with the new project data
         console.log('Project updated on server:', savedProject);
+        
+        // Don't close the form immediately to allow the user to see the changes
+        // Only close after a short delay
+        setTimeout(() => {
+          onClose();
+        }, 500);
       } else {
-        console.error('Failed to update project on server');
+        try {
+          const errorData = await response.json();
+          console.error('Failed to update project on server:', errorData);
+        } catch (jsonError) {
+          console.error('Failed to update project on server, no valid JSON response');
+        }
       }
     } catch (error) {
       console.error('Error updating project:', error);
     }
-  
-    onClose();
   };
 
   return (
@@ -85,10 +118,15 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
             accept="image/*"
             className="border p-2 rounded w-full bg-black text-slate-50 border-slate-50 cursor-pointer"
             onChange={handleImageChange}
+            disabled={isUploading}
           />
           {/* Image Preview */}
           <div className="border-2 border-slate-50 border-dotted mt-2 w-full h-32 flex items-center justify-center rounded">
-            {imagePreview ? (
+            {isUploading ? (
+              <div className="text-slate-50">
+                <span className="animate-pulse">Uploading image...</span>
+              </div>
+            ) : imagePreview ? (
               <img
                 src={imagePreview}
                 alt="Project cover preview"
@@ -98,6 +136,9 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
               <span className="font-medium text-slate-50">Image Preview</span>
             )}
           </div>
+          {uploadError && (
+            <p className="text-red-500 mt-1 text-sm">{uploadError}</p>
+          )}
         </div>
 
         {/* Project Name Input */}
@@ -172,8 +213,9 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
           <button
             type="submit"
             className="bg-black text-slate-50 py-2 px-4 rounded-md border-2 border-slate-50 hover:bg-slate-50 hover:text-slate-950"
+            disabled={isUploading}
           >
-            Save Changes
+            {isUploading ? "Uploading..." : "Save Changes"}
           </button>
         </div>
       </form>

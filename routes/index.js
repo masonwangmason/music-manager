@@ -1,182 +1,182 @@
 import express from "express";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import connectDB from "../db/mongodb.js"; // Import the MongoDB connection function
 
 const router = express.Router();
 
-// Convert import.meta.url to a file path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Connect to MongoDB
+let db;
+connectDB().then(database => {
+  db = database;
+  console.log("Database connection established");
+}).catch(error => {
+  console.error("Failed to connect to database:", error);
+});
 
-const projectsFilePath = path.join(__dirname, "../db/projects.json");
-
-// Helper function to read projects from the JSON file
-const readProjectsFromFile = () => {
-  const data = fs.readFileSync(projectsFilePath, "utf-8");
-  return JSON.parse(data);
-};
-
-// Helper function to write projects to the JSON file
-const writeProjectsToFile = (projects) => {
+// Use MongoDB for GET API data
+router.get("/api/projects", async (req, res) => {
   try {
-    fs.writeFileSync(projectsFilePath, JSON.stringify(projects, null, 2));
+    const projectsCollection = db.collection('projects');
+    const projects = await projectsCollection.find().toArray(); // Fetch projects from MongoDB
+    console.log('Fetched projects:', projects); // Log the fetched projects
+    res.json(projects);
   } catch (error) {
-    console.error('Error writing to projects.json:', error);
-  }
-};
-
-/* GET API data. */
-router.get("/api/projects", (req, res) => {
-  const projects = readProjectsFromFile(); // Read from file on each request
-  res.json(projects);
-});
-
-// POST endpoint to add a new project
-router.post("/api/projects", (req, res) => {
-  const newProject = req.body;
-  let projects = readProjectsFromFile(); // Read current projects
-
-  // Generate a new ID by finding the maximum existing ID and adding 1
-  const newId = projects.length > 0 ? Math.max(...projects.map(proj => proj.id)) + 1 : 1;
-  newProject.id = newId; // Assign the new ID to the project
-
-  // Ensure the new project includes an empty project_songs array
-  newProject.project_songs = newProject.project_songs || [];
-
-  projects.push(newProject);
-  writeProjectsToFile(projects); // Save to JSON file
-
-  res.status(201).json(newProject);
-});
-
-// PUT endpoint to update an existing project
-router.put("/api/projects/:id", (req, res) => {
-  const projectId = Number(req.params.id);
-  const updatedProject = req.body;
-  let projects = readProjectsFromFile(); // Read current projects
-
-  const projectIndex = projects.findIndex((proj) => proj.id === projectId);
-  if (projectIndex === -1) {
-    return res.status(404).json({ error: "Project not found" });
-  }
-
-  // Ensure the ID is preserved during the update
-  projects[projectIndex] = { ...projects[projectIndex], ...updatedProject, id: projectId };
-  writeProjectsToFile(projects); // Save to JSON file
-
-  res.json(projects[projectIndex]);
-});
-
-// DELETE endpoint to remove a project
-router.delete("/api/projects/:id", (req, res) => {
-  const projectId = Number(req.params.id);
-  let projects = readProjectsFromFile();
-
-  const projectIndex = projects.findIndex((proj) => proj.id === projectId);
-  if (projectIndex === -1) {
-    return res.status(404).json({ error: "Project not found" });
-  }
-
-  // Remove the project from the array
-  projects.splice(projectIndex, 1);
-  writeProjectsToFile(projects); // Save the updated list to the JSON file
-
-  res.status(204).send(); // Send a 204 No Content response
-});
-
-// POST endpoint to add a new song to a project
-router.post("/api/projects/:projectId/songs", (req, res) => {
-  const { projectId } = req.params;
-  const { songName, songCollaborators, songInstrumental, songLyrics, songDuration } = req.body;
-
-  let projects = readProjectsFromFile(); // Read current projects
-  const project = projects.find(proj => proj.id === Number(projectId));
-
-  if (!project) {
-    return res.status(404).json({ error: "Project not found" });
-  }
-
-  // Generate a unique song_id by finding the maximum existing song_id and adding 1
-  const newSongId = project.project_songs.length > 0 ? Math.max(...project.project_songs.map(song => song.song_id)) + 1 : 1;
-
-  const newSong = {
-    song_id: newSongId,
-    project_id: Number(projectId),
-    song_name: songName,
-    song_duration: songDuration,
-    song_collaborators: songCollaborators,
-    song_instrumental: songInstrumental,
-    song_lyrics: songLyrics,
-  };
-
-  project.project_songs.push(newSong);
-  writeProjectsToFile(projects); // Save the updated projects array to the JSON file
-
-  res.status(201).json(newSong);
-});
-
-// PUT endpoint to update a song in a project
-router.put("/api/projects/:projectId/songs/:songId", (req, res) => {
-  const { projectId, songId } = req.params;
-  const { songName, songCollaborators, songInstrumental, songLyrics, songDuration } = req.body;
-
-  console.log("Incoming song data:", { songName, songCollaborators, songInstrumental, songLyrics, songDuration });
-
-  let projects = readProjectsFromFile(); // Read current projects
-
-  const project = projects.find(proj => proj.id === Number(projectId));
-  if (!project) {
-    console.error(`Project with ID ${projectId} not found`);
-    return res.status(404).json({ error: "Project not found" });
-  }
-
-  const songIndex = project.project_songs.findIndex(song => song.song_id === Number(songId));
-  if (songIndex === -1) {
-    console.error(`Song with ID ${songId} not found in project ${projectId}`);
-    return res.status(404).json({ error: "Song not found" });
-  }
-
-  // Update the song with the new data, preserving existing values if undefined
-  project.project_songs[songIndex] = {
-    ...project.project_songs[songIndex],
-    song_name: songName !== undefined ? songName : project.project_songs[songIndex].song_name,
-    song_collaborators: songCollaborators !== undefined ? songCollaborators : project.project_songs[songIndex].song_collaborators,
-    song_instrumental: songInstrumental !== undefined ? songInstrumental : project.project_songs[songIndex].song_instrumental,
-    song_lyrics: songLyrics !== undefined ? songLyrics : project.project_songs[songIndex].song_lyrics,
-    song_duration: songDuration !== undefined ? songDuration : project.project_songs[songIndex].song_duration,
-  };
-
-  try {
-    writeProjectsToFile(projects); // Save the updated projects array to the JSON file
-    console.log("Updated song:", project.project_songs[songIndex]);
-    res.status(200).json(project.project_songs[songIndex]);
-  } catch (error) {
-    console.error('Error writing to projects.json:', error);
+    console.error('Error fetching projects:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-// DELETE endpoint to remove a song from a project
-router.delete("/api/projects/:projectId/songs/:songId", (req, res) => {
-  const { projectId, songId } = req.params;
-  let projects = readProjectsFromFile(); // Read current projects
-  const project = projects.find(proj => proj.id === Number(projectId));
-
-  if (!project) {
-    return res.status(404).json({ error: "Project not found" });
+// Use MongoDB for POST endpoint to add a new project
+router.post("/api/projects", async (req, res) => {
+  const newProject = req.body;
+  
+  // Initialize project_songs as an empty array if not already present
+  if (!newProject.project_songs) {
+    newProject.project_songs = [];
   }
 
-  const songIndex = project.project_songs.findIndex(song => song.song_id === Number(songId));
-  if (songIndex === -1) {
-    return res.status(404).json({ error: "Song not found" });
+  try {
+    const projectsCollection = db.collection('projects');
+    
+    // Generate a custom id if not provided
+    if (!newProject.id) {
+      const lastProject = await projectsCollection.find().sort({ id: -1 }).limit(1).toArray();
+      newProject.id = lastProject.length > 0 ? lastProject[0].id + 1 : 1;
+    }
+
+    const result = await projectsCollection.insertOne(newProject); // Insert new project into MongoDB
+    res.status(201).json({ id: newProject.id, ...newProject }); // Return the custom id and project data
+  } catch (error) {
+    console.error('Error adding project:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
+});
 
-  // Remove the song from the project's song list
-  project.project_songs.splice(songIndex, 1);
-  writeProjectsToFile(projects); // Save the updated projects array to the JSON file
+// Use MongoDB for PUT endpoint to update an existing project
+router.put("/api/projects/:id", async (req, res) => {
+  const projectId = parseInt(req.params.id, 10); // Convert to number using parseInt
+  const updatedProject = req.body;
 
-  res.status(204).send(); // Send a 204 No Content response
+  // Remove _id from the updatedProject to prevent modification of the immutable field
+  delete updatedProject._id;
+
+  console.log(`Updating project with custom ID: ${projectId}`); // Log the project ID
+  console.log('Updated project data:', updatedProject); // Log the updated project data
+
+  try {
+    const projectsCollection = db.collection('projects');
+    
+    // Check if the project exists first
+    const existingProject = await projectsCollection.findOne({ id: projectId });
+    console.log('Existing project:', existingProject); // Log the existing project
+
+    if (!existingProject) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    // Update the project using updateOne instead of findOneAndUpdate
+    const updateResult = await projectsCollection.updateOne(
+      { id: projectId },
+      { $set: updatedProject }
+    );
+    
+    console.log('MongoDB update result:', updateResult);
+    
+    if (updateResult.modifiedCount === 0) {
+      return res.status(404).json({ error: "Failed to update project" });
+    }
+    
+    // Fetch the updated document
+    const updatedDoc = await projectsCollection.findOne({ id: projectId });
+    console.log('MongoDB update result:', updatedDoc);
+    
+    res.json(updatedDoc);
+  } catch (error) {
+    console.error('Error updating project:', error); // Log the error for debugging
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Use MongoDB for DELETE endpoint to remove a project
+router.delete("/api/projects/:id", async (req, res) => {
+  const projectId = Number(req.params.id); // Convert to number if stored as a number
+  try {
+    const projectsCollection = db.collection('projects');
+    const result = await projectsCollection.deleteOne({ id: projectId }); // Use custom id field
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    res.status(204).send(); // Send a 204 No Content response
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Use MongoDB for POST endpoint to add a new song to a project
+router.post("/api/projects/:projectId/songs", async (req, res) => {
+  const projectId = Number(req.params.projectId); // Convert to number if stored as a number
+  const newSong = req.body;
+  try {
+    const projectsCollection = db.collection('projects');
+    const project = await projectsCollection.findOne({ id: projectId }); // Use custom id field
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    newSong.song_id = project.project_songs.length > 0 ? Math.max(...project.project_songs.map(song => song.song_id)) + 1 : 1;
+    project.project_songs.push(newSong);
+    await projectsCollection.updateOne({ id: projectId }, { $set: { project_songs: project.project_songs } }); // Use custom id field
+    res.status(201).json(newSong);
+  } catch (error) {
+    console.error('Error adding song:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Use MongoDB for PUT endpoint to update a song in a project
+router.put("/api/projects/:projectId/songs/:songId", async (req, res) => {
+  const projectId = Number(req.params.projectId); // Convert to number if stored as a number
+  const songId = Number(req.params.songId);
+  const updatedSong = req.body;
+  try {
+    const projectsCollection = db.collection('projects');
+    const project = await projectsCollection.findOne({ id: projectId }); // Use custom id field
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    const songIndex = project.project_songs.findIndex(song => song.song_id === songId);
+    if (songIndex === -1) {
+      return res.status(404).json({ error: "Song not found" });
+    }
+    project.project_songs[songIndex] = { ...project.project_songs[songIndex], ...updatedSong };
+    await projectsCollection.updateOne({ id: projectId }, { $set: { project_songs: project.project_songs } }); // Use custom id field
+    res.json(project.project_songs[songIndex]);
+  } catch (error) {
+    console.error('Error updating song:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Use MongoDB for DELETE endpoint to remove a song from a project
+router.delete("/api/projects/:projectId/songs/:songId", async (req, res) => {
+  const projectId = Number(req.params.projectId); // Convert to number if stored as a number
+  const songId = Number(req.params.songId);
+  try {
+    const projectsCollection = db.collection('projects');
+    const project = await projectsCollection.findOne({ id: projectId }); // Use custom id field
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    const songIndex = project.project_songs.findIndex(song => song.song_id === songId);
+    if (songIndex === -1) {
+      return res.status(404).json({ error: "Song not found" });
+    }
+    project.project_songs.splice(songIndex, 1);
+    await projectsCollection.updateOne({ id: projectId }, { $set: { project_songs: project.project_songs } }); // Use custom id field
+    res.status(204).send(); // Send a 204 No Content response
+  } catch (error) {
+    console.error('Error deleting song:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 export default router;
