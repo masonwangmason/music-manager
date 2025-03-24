@@ -95,12 +95,8 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
           onClose();
         }, 500);
       } else {
-        try {
           const errorData = await response.json();
           console.error('Failed to update project on server:', errorData);
-        } catch (jsonError) {
-          console.error('Failed to update project on server, no valid JSON response');
-        }
       }
     } catch (error) {
       console.error('Error updating project:', error);
