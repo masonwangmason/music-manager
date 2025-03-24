@@ -48,23 +48,28 @@ function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded p
   };
 
   const handleSave = async () => {
+    // Use snake_case for property names to match database schema
+    // Include project_id in the song data
     const songData = {
-      songName,
-      songCollaborators,
-      songInstrumental,
-      songLyrics,
-      songDuration, // Use the formatted duration
+      song_name: songName,
+      song_collaborators: songCollaborators,
+      song_instrumental: songInstrumental,
+      song_lyrics: songLyrics,
+      song_duration: songDuration,
+      project_id: projectId  // Add the project ID from props
     };
-
+  
+    console.log('Sending song data with project_id:', songData);
+  
     try {
-      const response = await fetch(`/api/projects/${projectId}/songs`, { // Use projectId prop
+      const response = await fetch(`/api/projects/${projectId}/songs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(songData),
       });
-
+  
       if (response.ok) {
         const newSong = await response.json();
         console.log('Song saved:', newSong);

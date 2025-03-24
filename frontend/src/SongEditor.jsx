@@ -42,16 +42,18 @@ function SongEditor({ song, onClose, onSave, onDelete }) {
 
   const handleSave = async () => {
     const updatedSong = {
-      songName: songName,
-      songCollaborators: songCollaborators,
-      songInstrumental: songInstrumental || song.song_instrumental, // Preserve existing instrumental if not updated
-      songLyrics: songLyrics,
-      songDuration: songDuration,
+      song_name: songName,
+      song_collaborators: songCollaborators,
+      song_instrumental: songInstrumental || song.song_instrumental, // Preserve existing instrumental if not updated
+      song_lyrics: songLyrics,
+      song_duration: songDuration,
+      song_id: song.song_id, // Preserve the song_id
+      project_id: song.project_id // Preserve the project_id
     };
-
+  
     // Debug log to verify the updated song data
     console.log("Updated song data:", updatedSong);
-
+  
     try {
       const response = await fetch(`/api/projects/${song.project_id}/songs/${song.song_id}`, {
         method: 'PUT',
@@ -60,7 +62,7 @@ function SongEditor({ song, onClose, onSave, onDelete }) {
         },
         body: JSON.stringify(updatedSong),
       });
-
+  
       if (response.ok) {
         const savedSong = await response.json();
         onSave(savedSong); // Update the UI with the saved song
