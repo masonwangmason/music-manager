@@ -10,7 +10,12 @@ function Main() {
   const [currentCollaboratorName, setCurrentCollaboratorName] = useState("");
   const [currentProjectCover, setCurrentProjectCover] = useState("");
 
-  const handlePlaySong = (songUrl, songName, collaboratorName, projectCover) => {
+  const handlePlaySong = (
+    songUrl,
+    songName,
+    collaboratorName,
+    projectCover
+  ) => {
     setCurrentSongUrl(songUrl);
     setCurrentSongName(songName);
     setCurrentCollaboratorName(collaboratorName);
@@ -18,19 +23,19 @@ function Main() {
   };
 
   return (
-    <BrowserRouter> 
+    <BrowserRouter>
       <div className="app-container">
         {/* Main Content */}
-        <div className="main-content pb-20"> 
+        <div className="main-content pb-20">
           <App onPlaySong={handlePlaySong} /> {/* Pass handlePlaySong to App */}
         </div>
 
         {/* Player Bar */}
-        <PlayerBar 
-          songUrl={currentSongUrl} 
-          songName={currentSongName} 
-          collaboratorName={currentCollaboratorName} 
-          projectCover={currentProjectCover} 
+        <PlayerBar
+          songUrl={currentSongUrl}
+          songName={currentSongName}
+          collaboratorName={currentCollaboratorName}
+          projectCover={currentProjectCover}
         />
       </div>
     </BrowserRouter>
@@ -38,4 +43,3 @@ function Main() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<Main />);
-

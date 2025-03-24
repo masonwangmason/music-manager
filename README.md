@@ -5,18 +5,18 @@
 **Class**: CS5610 - Web Development   
 
 **Class Link**: https://johnguerra.co/classes/webDevelopment_spring_2025/  
-**Design Doc**: https://docs.google.com/document/d/1EO92k3asR6pwD6PMdJCZ0HBWyti_d1t3dFtmEtAAr80/edit?usp=sharing   
-**Slides**: https://docs.google.com/presentation/d/1hQVvfzQ_0DJ0mP3lJyMOtLlPOERtxukz_8_sRUmA1Ps/edit?usp=sharing  
-**Demo**: https://daily-pride-journal.vercel.app/  
-**Video**: https://youtu.be/EA-7ZLA1LIM    
-**Wireframe**: https://www.figma.com/design/jOlurv2gUqCZRYERU6Orv0/WebDev-Project-2-Mockup?t=LougloaexkRifHL9-1  
+**Design Doc**: https://docs.google.com/document/d/1M5H6b-8of2mzEQhMIb03A0gIjG1v7V405SAsRGxeqDU/edit?usp=sharing     
+**Slides**: https://docs.google.com/presentation/d/1zUsMvfjdN0J591YvfGsvXg0_uD3G6Nhe3_geRnDE9lM/edit?usp=sharing  
+**Demo**:   
+**Video**:   
+**Wireframe**: https://www.figma.com/design/nuBMiwldwZXAxi7fLpHPEg/Untitled?node-id=0-1&t=gia474sT3jKBywSQ-1    
 
 ## Project Overview
 **Music Manager** is a comprehensive web application designed to **help music professionals organize their music projects and tracks in one centralized platform**. Built with **React**, **Node.js**, **Express.js**, and **MongoDB**, the app provides an intuitive interface for managing music production workflows. Users can create projects, upload instrumental tracks, add lyrics, and track collaborators for each song. The application also features a built-in audio player that allows users to listen to their tracks directly within the platform, making it easy to review and share works in progress.
 
 **Frontend Development**: HTML/CSS, JavaScript, React, Tailwind CSS   
-**Backend Development**: Node.js, Express  
-**Database**: MongoDB  
+**Backend Development**: Node.js, Express
+**Database**: MongoDB, Cloudinary  
 **Development Tools**: Trae & VS Code (with ESLint & Prettier)  
 **Deployment**: Vercel  
 
@@ -64,8 +64,7 @@ http://localhost:3000
 This project is licensed under the MIT License. See the LICENSE file for details. 
 
 ## Credits
-Image by **mariadetarosarinda** on Freepik: https://www.freepik.com/author/mariadetarosarinda  
-Font by **Allura** on Google Fonts: https://fonts.google.com/specimen/Allura  
+
 
 ## LLM Citation
 "Is there a way i can automatically set the newDate to the current date?"

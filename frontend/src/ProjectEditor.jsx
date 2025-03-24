@@ -3,8 +3,12 @@ import { useState } from "react";
 function ProjectEditor({ project, onClose, onSave, onDelete }) {
   const [projectName, setProjectName] = useState(project.project_name || "");
   const [projectType, setProjectType] = useState(project.project_type || "");
-  const [projectDescription, setProjectDescription] = useState(project.project_description || "");
-  const [projectStatus, setProjectStatus] = useState(project.project_status ? "Complete" : "In Progress");
+  const [projectDescription, setProjectDescription] = useState(
+    project.project_description || ""
+  );
+  const [projectStatus, setProjectStatus] = useState(
+    project.project_status ? "Complete" : "In Progress"
+  );
   const [imagePreview, setImagePreview] = useState(project.project_cover || "");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
@@ -12,35 +16,38 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
   // Handle image upload
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    const cloudName = 'df11www4b';
-    const uploadPreset = 'music-manager';
-  
+    const cloudName = "df11www4b";
+    const uploadPreset = "music-manager";
+
     if (file) {
       // Set uploading state to true
       setIsUploading(true);
       setUploadError("");
-      console.log('Uploading image to Cloudinary...');
-      
+      console.log("Uploading image to Cloudinary...");
+
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
-  
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+
       try {
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-          method: 'POST',
-          body: formData,
-        });
-  
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to upload image');
+          throw new Error("Failed to upload image");
         }
-  
+
         const data = await response.json();
-        console.log('Image uploaded successfully:', data);
+        console.log("Image uploaded successfully:", data);
         setImagePreview(data.secure_url); // Update the image preview with the new URL
         setIsUploading(false); // Set uploading state to false
       } catch (error) {
-        console.error('Error uploading image:', error);
+        console.error("Error uploading image:", error);
         setUploadError("Failed to upload image. Please try again.");
         setIsUploading(false); // Set uploading state to false even if there's an error
       }
@@ -53,7 +60,7 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
       alert("Please wait for the image to finish uploading before saving.");
       return;
     }
-    
+
     // Make sure we're using the latest imagePreview value
     const updatedProject = {
       ...project,
@@ -63,52 +70,60 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
       project_status: projectStatus === "Complete", // Convert string to boolean
       project_cover: imagePreview, // This should contain the Cloudinary URL
     };
-  
+
     if (!project.id) {
-      console.error('Project ID is undefined');
+      console.error("Project ID is undefined");
       return;
     }
-  
-    console.log('Sending update request for project:', updatedProject);
-    console.log('Image URL being sent:', imagePreview);
-  
+
+    console.log("Sending update request for project:", updatedProject);
+    console.log("Image URL being sent:", imagePreview);
+
     try {
       const response = await fetch(`/api/projects/${project.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedProject),
       });
-  
-      console.log('Received response:', response);
-  
+
+      console.log("Received response:", response);
+
       if (response.ok) {
         const savedProject = await response.json();
         // Make sure we're passing the complete updated project back to the parent
         onSave(savedProject); // Update client-side state with the new project data
-        console.log('Project updated on server:', savedProject);
-        
+        console.log("Project updated on server:", savedProject);
+
         // Don't close the form immediately to allow the user to see the changes
         // Only close after a short delay
         setTimeout(() => {
           onClose();
         }, 500);
       } else {
-          const errorData = await response.json();
-          console.error('Failed to update project on server:', errorData);
+        const errorData = await response.json();
+        console.error("Failed to update project on server:", errorData);
       }
     } catch (error) {
-      console.error('Error updating project:', error);
+      console.error("Error updating project:", error);
     }
   };
 
   return (
     <div className="w-full">
-      <form className="flex flex-col gap-4 bg-black" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+      <form
+        className="flex flex-col gap-4 bg-black"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSave();
+        }}
+      >
         {/* Upload Project Cover */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Project Cover</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Project Cover
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -139,7 +154,9 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
 
         {/* Project Name Input */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Project Name</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Project Name
+          </label>
           <input
             type="text"
             value={projectName}
@@ -152,7 +169,9 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
 
         {/* Project Description Input */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Project Description</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Project Description
+          </label>
           <textarea
             value={projectDescription}
             onChange={(e) => setProjectDescription(e.target.value)}
@@ -163,7 +182,9 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
 
         {/* Project Type Select */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Project Type</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Project Type
+          </label>
           <select
             value={projectType}
             onChange={(e) => setProjectType(e.target.value)}
@@ -178,7 +199,9 @@ function ProjectEditor({ project, onClose, onSave, onDelete }) {
 
         {/* Project Status Select */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Project Status</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Project Status
+          </label>
           <select
             value={projectStatus}
             onChange={(e) => setProjectStatus(e.target.value)}

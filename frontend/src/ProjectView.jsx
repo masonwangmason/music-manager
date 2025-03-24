@@ -1,18 +1,18 @@
-import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProjectEditor from "./ProjectEditor";
-import SongCard from "./SongCard"; 
-import SongCreator from "./SongCreator"; 
+import SongCard from "./SongCard";
+import SongCreator from "./SongCreator";
 import SongEditor from "./SongEditor";
 
 function ProjectView({ onPlaySong }) {
-  const { id } = useParams(); 
-  const navigate = useNavigate(); 
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [showProjectEditor, setShowProjectEditor] = useState(false);
-  const [showSongCreator, setShowSongCreator] = useState(false); 
+  const [showSongCreator, setShowSongCreator] = useState(false);
   const [projects, setProjects] = useState([]);
-  const [showSongEditor, setShowSongEditor] = useState(false); 
+  const [showSongEditor, setShowSongEditor] = useState(false);
   const [currentSong, setCurrentSong] = useState(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function ProjectView({ onPlaySong }) {
       try {
         const response = await fetch(`/api/projects`);
         const data = await response.json();
-        const fetchedProject = data.find(proj => proj.id === Number(id));
+        const fetchedProject = data.find((proj) => proj.id === Number(id));
         if (fetchedProject) {
           setProject(fetchedProject);
         } else {
@@ -43,23 +43,25 @@ function ProjectView({ onPlaySong }) {
   };
 
   const handleDeleteProject = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this project?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
     if (!confirmDelete) {
       return;
     }
 
     try {
       const response = await fetch(`/api/projects/${project.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
         navigate(-1);
       } else {
-        console.error('Failed to delete project');
+        console.error("Failed to delete project");
       }
     } catch (error) {
-      console.error('Error deleting project:', error);
+      console.error("Error deleting project:", error);
     }
   };
 
@@ -91,21 +93,26 @@ function ProjectView({ onPlaySong }) {
 
   const handleDeleteSong = async (songId) => {
     try {
-      const response = await fetch(`/api/projects/${project.id}/songs/${songId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/projects/${project.id}/songs/${songId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         setProject((prevProject) => ({
           ...prevProject,
-          project_songs: prevProject.project_songs.filter(song => song.song_id !== songId),
+          project_songs: prevProject.project_songs.filter(
+            (song) => song.song_id !== songId
+          ),
         }));
         setShowSongEditor(false);
       } else {
-        console.error('Failed to delete song');
+        console.error("Failed to delete song");
       }
     } catch (error) {
-      console.error('Error deleting song:', error);
+      console.error("Error deleting song:", error);
     }
   };
 
@@ -170,21 +177,32 @@ function ProjectView({ onPlaySong }) {
               onClick={() => setShowSongCreator(true)}
             >
               <span className="group-hover:hidden">+</span>
-              <span className="hidden group-hover:inline transition duration-400">Create New Song +</span>
+              <span className="hidden group-hover:inline transition duration-400">
+                Create New Song +
+              </span>
             </button>
             {project.project_songs && project.project_songs.length > 0 ? (
-              project.project_songs.map(song => (
-                <SongCard 
-                  key={song.song_id} 
-                  song={song} 
-                  onEdit={openSongEditor} 
-                  onPlay={() => onPlaySong(song.song_instrumental, song.song_name, song.song_collaborators, project.project_cover)} 
+              project.project_songs.map((song) => (
+                <SongCard
+                  key={song.song_id}
+                  song={song}
+                  onEdit={openSongEditor}
+                  onPlay={() =>
+                    onPlaySong(
+                      song.song_instrumental,
+                      song.song_name,
+                      song.song_collaborators,
+                      project.project_cover
+                    )
+                  }
                 />
               ))
             ) : (
-              <p className="font-bold text-slate-50 text-left">No songs available in this project yet.
-                <br/>Start by creating a new one by hitting the button above.
-                </p>
+              <p className="font-bold text-slate-50 text-left">
+                No songs available in this project yet.
+                <br />
+                Start by creating a new one by hitting the button above.
+              </p>
             )}
           </div>
         </div>
@@ -270,9 +288,7 @@ function ProjectView({ onPlaySong }) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-black border border-slate-50 rounded-lg p-6 w-full max-w-3xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-slate-50">
-                Edit Song
-              </h2>
+              <h2 className="text-xl font-semibold text-slate-50">Edit Song</h2>
               <button
                 onClick={() => setShowSongEditor(false)}
                 className="text-slate-50 hover:text-slate-300"
@@ -302,7 +318,6 @@ function ProjectView({ onPlaySong }) {
           </div>
         </div>
       )}
-
     </>
   );
 }

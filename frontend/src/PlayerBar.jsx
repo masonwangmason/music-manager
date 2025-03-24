@@ -12,22 +12,58 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
-  const [loopStatus, setLoopStatus] = useState(false); 
+  const [loopStatus, setLoopStatus] = useState(false);
 
   useEffect(() => {
     if (audioRef.current && songUrl) {
+      // Reset the audio element completely
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      // Force a reload of the audio source
       audioRef.current.load();
-      audioRef.current.play();
-      setPlayerState(true);
+
+      // Add a small delay before playing to ensure the audio is ready
+      const playPromise = audioRef.current.play();
+
+      // Handle the play promise to avoid uncaught promise errors
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setPlayerState(true);
+            console.log("Audio started playing successfully");
+          })
+          .catch((error) => {
+            console.error("Error playing audio:", error);
+            setPlayerState(false);
+          });
+      }
     }
   }, [songUrl]);
+
+  // Add this effect to handle audio end
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      const handleEnded = () => {
+        setPlayerState(false);
+        setCurrentTime(0);
+      };
+
+      audio.addEventListener("ended", handleEnded);
+      return () => {
+        audio.removeEventListener("ended", handleEnded);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
       const updateTime = () => setCurrentTime(audio.currentTime);
       audio.addEventListener("timeupdate", updateTime);
-      audio.addEventListener("loadedmetadata", () => setDuration(audio.duration));
+      audio.addEventListener("loadedmetadata", () =>
+        setDuration(audio.duration)
+      );
 
       return () => {
         audio.removeEventListener("timeupdate", updateTime);
@@ -61,7 +97,7 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
   return (
@@ -72,14 +108,16 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
         <div className="flex items-center gap-3">
           {projectCover && (
             <img
-              src={projectCover} 
+              src={projectCover}
               alt="Project Cover"
               className="w-18 h-18 ml-4 rounded-md"
             />
           )}
           <div>
             <h4 className="font-semibold text-left">{songName}</h4>
-            <p className="text-sm text-gray-400 text-left">feat.{collaboratorName}</p>
+            <p className="text-sm text-gray-400 text-left">
+              feat.{collaboratorName}
+            </p>
           </div>
         </div>
 
@@ -111,10 +149,11 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
               />
             </button>
           </div>
-        
+
           {/* Progress Slider */}
           <div className="flex items-center justify-center gap-2 w-full">
-            <span className="text-sm">{formatTime(currentTime)}</span> {/* Time passed */}
+            <span className="text-sm">{formatTime(currentTime)}</span>{" "}
+            {/* Time passed */}
             <input
               type="range"
               min="0"
@@ -123,7 +162,8 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
               onChange={handleSliderChange}
               className="accent-red-500 w-96 mt-3 mb-2"
             />
-            <span className="text-sm">{formatTime(duration)}</span> {/* Total duration */}
+            <span className="text-sm">{formatTime(duration)}</span>{" "}
+            {/* Total duration */}
           </div>
         </div>
 
@@ -132,19 +172,17 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
           {/* Repeat */}
           <button onClick={handleLoopChange}>
             <img
-              className={`w-8 h-8 p-2 ${loopStatus ? 'bg-red-500'  : 'bg-slate-50'} rounded-4xl transition duration-200`}
+              className={`w-8 h-8 p-2 ${loopStatus ? "bg-red-500" : "bg-slate-50"} rounded-4xl transition duration-200`}
               src={repeatButton}
               alt="repeat-button"
             />
           </button>
-          
           {/* No Volume Icon */}
           <img
             className="w-4 h-4 invert"
             src={minSoundIcon}
             alt="min-sound-icon"
           />
-
           {/* Volume Slider */}
           <input
             type="range"
@@ -156,7 +194,6 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
               audioRef.current.volume = e.target.value;
             }}
           />{" "}
-
           {/* Max Volume Icon */}
           <img
             className="w-4 h-4 invert"
@@ -166,8 +203,13 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
         </div>
       </div>
 
-      {/* Conditionally render the audio element only if songUrl is provided */}
-      {songUrl && <audio ref={audioRef} src={songUrl} preload="auto" />}
+      {/* Always render the audio element but only set src when songUrl is available */}
+      <audio
+        ref={audioRef}
+        src={songUrl || ""}
+        preload="auto"
+        onError={(e) => console.error("Audio error:", e)}
+      />
     </>
   );
 }

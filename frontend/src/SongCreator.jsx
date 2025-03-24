@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded prop
+function SongCreator({ onClose, projectId, onSongAdded }) {
+  // Add onSongAdded prop
   const [songName, setSongName] = useState("");
   const [songCollaborators, setSongCollaborators] = useState("");
   const [songInstrumental, setSongInstrumental] = useState("");
@@ -10,37 +11,42 @@ function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded p
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    const cloudName = 'df11www4b';
-    const uploadPreset = 'music-manager';
+    const cloudName = "df11www4b";
+    const uploadPreset = "music-manager";
 
     if (file) {
       setUploading(true);
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
 
       try {
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
-          method: 'POST',
-          body: formData,
-        });
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to upload instrumental');
+          throw new Error("Failed to upload instrumental");
         }
 
         const data = await response.json();
         setSongInstrumental(data.secure_url); // Set the uploaded file URL
-        console.log('Uploaded instrumental:', data.secure_url);
+        console.log("Uploaded instrumental:", data.secure_url);
 
         // Convert duration from seconds to "minutes:seconds" format
         const minutes = Math.floor(data.duration / 60);
-        const seconds = Math.floor(data.duration % 60).toString().padStart(2, '0');
+        const seconds = Math.floor(data.duration % 60)
+          .toString()
+          .padStart(2, "0");
         const formattedDuration = `${minutes}:${seconds}`;
         setSongDuration(formattedDuration); // Set the formatted duration
-        console.log('Song duration:', formattedDuration);
+        console.log("Song duration:", formattedDuration);
       } catch (error) {
-        console.error('Error uploading instrumental:', error);
+        console.error("Error uploading instrumental:", error);
       } finally {
         setUploading(false);
       }
@@ -56,39 +62,47 @@ function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded p
       song_instrumental: songInstrumental,
       song_lyrics: songLyrics,
       song_duration: songDuration,
-      project_id: projectId  // Add the project ID from props
+      project_id: projectId, // Add the project ID from props
     };
-  
-    console.log('Sending song data with project_id:', songData);
-  
+
+    console.log("Sending song data with project_id:", songData);
+
     try {
       const response = await fetch(`/api/projects/${projectId}/songs`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(songData),
       });
-  
+
       if (response.ok) {
         const newSong = await response.json();
-        console.log('Song saved:', newSong);
+        console.log("Song saved:", newSong);
         onSongAdded(newSong); // Call the callback with the new song
         onClose(); // Close the form after saving
       } else {
-        console.error('Failed to save song');
+        console.error("Failed to save song");
       }
     } catch (error) {
-      console.error('Error saving song:', error);
+      console.error("Error saving song:", error);
     }
   };
 
   return (
     <div className="w-full">
-      <form className="flex flex-col gap-4 bg-black" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+      <form
+        className="flex flex-col gap-4 bg-black"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSave();
+        }}
+      >
         {/* Song Name Input */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Song Name</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Song Name
+          </label>
           <input
             type="text"
             value={songName}
@@ -101,7 +115,9 @@ function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded p
 
         {/* Song Collaborators Input */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Song Collaborators</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Song Collaborators
+          </label>
           <input
             type="text"
             value={songCollaborators}
@@ -113,7 +129,9 @@ function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded p
 
         {/* Song Instrumental Upload */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Upload Instrumental</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Upload Instrumental
+          </label>
           <input
             type="file"
             accept="audio/*"
@@ -125,7 +143,9 @@ function SongCreator({ onClose, projectId, onSongAdded }) { // Add onSongAdded p
 
         {/* Song Lyrics Input */}
         <div>
-          <label className="block font-medium mb-1 text-left text-slate-50">Song Lyrics</label>
+          <label className="block font-medium mb-1 text-left text-slate-50">
+            Song Lyrics
+          </label>
           <textarea
             value={songLyrics}
             onChange={(e) => setSongLyrics(e.target.value)}

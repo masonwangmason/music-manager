@@ -6,7 +6,10 @@ function App({ onPlaySong }) {
   return (
     <Routes>
       <Route path="/" element={<ProjectOverview />} />
-      <Route path="/project/:id" element={<ProjectView onPlaySong={onPlaySong} />} />
+      <Route
+        path="/project/:id"
+        element={<ProjectView onPlaySong={onPlaySong} />}
+      />
     </Routes>
   );
 }
