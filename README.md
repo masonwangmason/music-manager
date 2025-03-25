@@ -37,10 +37,10 @@ Backend deployed with Vercel. Database deployed with MongoDB Atlas.
 ***Option 2: Run Locally***  
 
 **Step 1: Git clone this repository**  
-git clone https://github.com/masonwangmason/Daily-Pride-Journal.git
+git clone https://github.com/masonwangmason/music-manager.git
 
 **Step 2: Navigate to the project directory**  
-cd Daily-Pride-Journal
+cd music-manager
 
 **Step 3: Install dependencies**  
 npm install
@@ -63,14 +63,14 @@ http://localhost:3000
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details. 
 
-## Credits
-
 
 ## LLM Citation
-"Is there a way i can automatically set the newDate to the current date?"
-
-"Why is the node module file still exist in my github after i push, even though I've added the .gitignore file?"
-
-"How can I change the layout of history cards so when an user clicks edit, it will enable them to edit the entries?" 
-
-"is there a way you can help me write 1000+ entries for my database and put them on mongo?"  
+Project structure and design insights:
+- "Why is the node module file still in my GitHub after pushing, despite adding it to .gitignore?"
+- "How can I enable users to edit entries by clicking on history cards?"
+- "Can you assist in generating and inserting 1000+ database entries into MongoDB?"
+- "How can I remove files from GitHub without deleting them locally?"
+- "What steps should I take to troubleshoot a 500 error when fetching projects from the server?"
+- "How can I update my deployed Vercel project using the command line?"
+- "Can you help me center elements within a div using Tailwind CSS?"
+- "How do I ensure my MongoDB connection is correctly established in my Node.js application?"
