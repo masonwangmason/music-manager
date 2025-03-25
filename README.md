@@ -7,8 +7,8 @@
 **Class Link**: https://johnguerra.co/classes/webDevelopment_spring_2025/  
 **Design Doc**: https://docs.google.com/document/d/1M5H6b-8of2mzEQhMIb03A0gIjG1v7V405SAsRGxeqDU/edit?usp=sharing     
 **Slides**: https://docs.google.com/presentation/d/1zUsMvfjdN0J591YvfGsvXg0_uD3G6Nhe3_geRnDE9lM/edit?usp=sharing  
-**Demo**:   
-**Video**:   
+**Demo**:  https://music-manager-obf2.vercel.app/   
+**Video**: https://youtu.be/J9A7jvZbIM4  
 **Wireframe**: https://www.figma.com/design/nuBMiwldwZXAxi7fLpHPEg/Untitled?node-id=0-1&t=gia474sT3jKBywSQ-1    
 
 ## Project Overview
