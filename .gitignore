@@ -32,3 +32,4 @@ dist-ssr
 # Ignore package-lock.json and yarn.lock files
 package-lock.json
 yarn.lock
+.vercel

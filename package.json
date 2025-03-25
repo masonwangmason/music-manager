@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "license": "MIT",
+  "main": "app.js",
   "scripts": {
     "start": "node --watch ./bin/www",
     "build": "cd frontend && npm install && npm run build"
