@@ -6,8 +6,8 @@
   "license": "MIT",
   "main": "app.js",
   "scripts": {
-    "start": "node --watch ./bin/www",
-    "build": "cd frontend && npm install && npm run build"
+    "start": "node --watch app.js",
+    "build": "cd frontend && npm run build"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
