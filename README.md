@@ -31,7 +31,7 @@
 
 ***Option 1: Live Demo***  
 
-https://daily-pride-journal.vercel.app/  
+https://music-manager-obf2.vercel.app/    
 Backend deployed with Vercel. Database deployed with MongoDB Atlas.
 
 ***Option 2: Run Locally***  

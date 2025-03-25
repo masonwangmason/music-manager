@@ -1,5 +1,5 @@
 import express from "express";
-import connectDB from "../db/mongodb.js"; // Import the MongoDB connection function
+import connectDB from "../db/mongodb.js"; 
 
 const router = express.Router();
 

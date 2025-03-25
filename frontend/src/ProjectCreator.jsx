@@ -22,8 +22,8 @@ function ProjectCreator({ onClose, onSave }) {
 
   // Upload image to Cloudinary
   const uploadToCloudinary = async (file) => {
-    const cloudName = "df11www4b"; // Replace with your Cloudinary cloud name
-    const uploadPreset = "music-manager"; // Replace with your upload preset
+    const cloudName = "df11www4b"; 
+    const uploadPreset = "music-manager"; 
 
     const formData = new FormData();
     formData.append("file", file);
@@ -69,7 +69,6 @@ function ProjectCreator({ onClose, onSave }) {
       if (uploadedUrl) {
         coverUrl = uploadedUrl;
       } else {
-        // If upload failed, you might want to handle this case
         if (!confirm("Image upload failed. Continue without image?")) {
           return; // Stop form submission if user cancels
         }
@@ -82,7 +81,7 @@ function ProjectCreator({ onClose, onSave }) {
       project_type: projectType,
       project_description: projectDescription,
       project_cover: coverUrl,
-      project_status: false, // Assuming new projects start as not completed
+      project_status: false, 
     };
 
     console.log("New project data:", newProject);
