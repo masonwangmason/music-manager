@@ -203,13 +203,21 @@ function PlayerBar({ songUrl, songName, collaboratorName, projectCover }) {
         </div>
       </div>
 
-      {/* Always render the audio element but only set src when songUrl is available */}
-      <audio
-        ref={audioRef}
-        src={songUrl || ""}
-        preload="auto"
-        onError={(e) => console.error("Audio error:", e)}
-      />
+      {/* Conditionally render the audio element */}
+      {songUrl ? (
+        <audio
+          ref={audioRef}
+          src={songUrl}
+          preload="auto"
+          onError={(e) => console.error("Audio error:", e)}
+        />
+      ) : (
+        <audio
+          ref={audioRef}
+          preload="auto"
+          onError={(e) => console.error("Audio error:", e)}
+        />
+      )}
     </>
   );
 }
