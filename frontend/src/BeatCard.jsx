@@ -1,6 +1,6 @@
 import headphoneIcon from "./assets/headphone.png";
 
-function BeatCard() {
+function BeatCard({ beat }) {  // Destructure the beat prop
   return (
     <>
       <section className="flex justify-center w-4xl">
@@ -13,29 +13,18 @@ function BeatCard() {
             />
           </button>
           <div className="flex-1 flex flex-row items-center gap-4 overflow-hidden">
-            <p className="flex-1 truncate">beat name</p>{" "}
-            {/* Display song name */}
-            <p className="flex-none">length</p>{" "}
-            {/* Display song duration */}
-            <p className="flex-1 truncate">
-              author
-            </p>
+            <p className="flex-1 truncate">{beat.beat_name}</p>
+            <p className="flex-none">{beat.beat_length}</p>
+            <p className="flex-1 truncate">{beat.beat_author}</p>
           </div>
-
           <div className="flex flex-row gap-1.5">
-                <button
-                className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950"
-                onClick={() => onEdit(song)}
-                >
-                Edit
-                </button>
-                <button
-                className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950"
-                onClick={() => onEdit(song)}
-                >
-                Download
-                </button>
-            </div>
+            <button className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950">
+              Edit
+            </button>
+            <button className="font-light border-1 border-slate-50 text-slate-50 py-1 px-2.5 rounded-md transition duration-200 hover:bg-slate-50 hover:text-slate-950">
+              Download
+            </button>
+          </div>
         </div>
       </section>
     </>

@@ -1,6 +1,22 @@
 import BeatCard from "./BeatCard";
+import { useEffect, useState } from "react";
 
 function BeatCollectionView() {
+  const [beats, setBeats] = useState([]);
+
+  // Fetch beats from the server
+  useEffect(() => {
+    const fetchBeats = async () => {
+      try {
+        const response = await fetch("/api/beats");
+        const data = await response.json();
+        setBeats(data);
+      } catch (error) {
+        console.error("Error fetching beats:", error);
+      }
+    };
+    fetchBeats();
+  }, [])
 
   return (
     <>
@@ -21,14 +37,15 @@ function BeatCollectionView() {
         </div>
         </section>
 
-      {/* Beat Cards Section - Modified to center content */}
+      {/* Beat Cards Section */}
       <section className="flex flex-col items-center w-full">
         <div className="flex flex-col items-center gap-1.5 w-full max-w-5xl">
-          {/* Example Beat Cards */}
-          <BeatCard />
-          <BeatCard />
-          <BeatCard />
-          <BeatCard />
+          {beats.map((beat, index) => (
+            <BeatCard 
+              key={index}
+              beat={beat}  // Pass the entire beat object as a prop
+            />
+          ))}
         </div>
       </section>
 

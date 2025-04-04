@@ -204,4 +204,17 @@ router.delete("/api/projects/:projectId/songs/:songId", async (req, res) => {
   }
 });
 
+// Use MongoDB for GET beat API data
+router.get("/api/beats", async (req, res) => {
+  try {
+    const beatsCollection = db.collection("beats");
+    const beats = await beatsCollection.find().toArray(); // Fetch projects from MongoDB
+    console.log("Fetched beats:", beats); // Log the fetched beats
+    res.json(beats);
+  } catch (error) {
+    console.error("Error fetching beats:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 export default router;
