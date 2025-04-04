@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import PlayerBar from "./PlayerBar";
+import NavBar from "./NavBar";
 
 function Main() {
   const [currentSongUrl, setCurrentSongUrl] = useState("");
@@ -25,6 +26,7 @@ function Main() {
   return (
     <BrowserRouter>
       <div className="app-container">
+        <NavBar />
         {/* Main Content */}
         <div className="main-content pb-20">
           <App onPlaySong={handlePlaySong} /> {/* Pass handlePlaySong to App */}
